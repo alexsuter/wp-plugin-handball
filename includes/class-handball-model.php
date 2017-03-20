@@ -32,6 +32,11 @@ class Team
         return $this->teamName;
     }
 
+    public function setSaison($saison)
+    {
+        $this->saison = $saison;
+    }
+
     public function getSaison()
     {
         return $this->saison;

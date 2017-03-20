@@ -15,9 +15,11 @@ class HandballTeamRepository
     public function saveTeam(Team $team)
     {
         // apply saion
-        $row = $this->wpdb->get_row('SELECT * FROM hcg_team WHERE id = ' . $team->getTeamId());
+        $row = $this->wpdb->get_row('SELECT * FROM handball_team WHERE id = ' . $team->getTeamId());
         if ($row) {
             $team->setSaison($row->saison);
+        } else {
+            $team->setSaison($this->evaluateCurrentSaison());
         }
 
         $data = [
@@ -31,16 +33,31 @@ class HandballTeamRepository
             '%s'
         ];
 
-        $row = $this->wpdb->get_row('SELECT * FROM hcg_team WHERE id = ' . $team->getTeamId());
+        $row = $this->wpdb->get_row('SELECT * FROM handball_team WHERE id = ' . $team->getTeamId());
         if ($row) {
-            $this->wpdb->update('hcg_team', $data, [
+            $this->wpdb->update('handball_team', $data, [
                 'team_id' => $team->getTeamId()
             ], $format, [
                 '%d'
             ]);
         } else {
-            $this->wpdb->insert('hcg_team', $data, $format);
+            $this->wpdb->insert('handball_team', $data, $format);
         }
+    }
+
+    private function evaluateCurrentSaison()
+    {
+        $saison = '';
+        $currentMonth = intval(date('n'));
+        $currentYear = date('Y');
+        if ($currentMonth < 5) {
+            $lastYear = date('Y', strtotime('-1 year'));
+            $saison = $lastYear . $currentYear;
+        } else {
+            $nextYear = date('Y', strtotime('+1 year'));
+            $saison = $currentYear . $nextYear;
+        }
+        return $saison;
     }
 
     public function findAll($orderBy = 'team_id', $order = 'ASC')
@@ -49,7 +66,7 @@ class HandballTeamRepository
         if (!$orderByClause) {
             $orderByClause = 'team_id ASC';
         }
-        $dbTeams = $this->wpdb->get_results('SELECT * FROM hcg_team ORDER BY ' . $orderByClause);
+        $dbTeams = $this->wpdb->get_results('SELECT * FROM handball_team ORDER BY ' . $orderByClause);
 
         $teams = [];
         foreach ($dbTeams as $dbTeam) {
@@ -123,33 +140,33 @@ class HandballMatchRepository
             '%d',
         ];
 
-        $row = $this->wpdb->get_row('SELECT * FROM hcg_match WHERE game_id = ' . $match->getGameId());
+        $row = $this->wpdb->get_row('SELECT * FROM handball_match WHERE game_id = ' . $match->getGameId());
         if ($row) {
-            $this->wpdb->update('hcg_match', $data, [
+            $this->wpdb->update('handball_match', $data, [
                 'game_id' => $match->getGameId()
             ], $format, [
                 '%d'
             ]);
         } else {
-            $this->wpdb->insert('hcg_match', $data, $format);
+            $this->wpdb->insert('handball_match', $data, $format);
         }
     }
 
     public function findAll()
     {
-        $dbMatches = $this->wpdb->get_results('SELECT * FROM hcg_match');
+        $dbMatches = $this->wpdb->get_results('SELECT * FROM handball_match');
         return $this->mapMatches($dbMatches);
     }
 
     public function findMatchesNextWeek() {
-        $dbMatches = $this->wpdb->get_results('SELECT * FROM hcg_match
+        $dbMatches = $this->wpdb->get_results('SELECT * FROM handball_match
             WHERE game_datetime < (DATE_ADD(CURDATE(), INTERVAL 1 WEEK)) AND game_datetime > (CURDATE())
             ORDER BY game_datetime ASC');
         return $this->mapMatches($dbMatches);
     }
 
     public function findMatchesLastWeek() {
-        $dbMatches = $this->wpdb->get_results('SELECT * FROM hcg_match
+        $dbMatches = $this->wpdb->get_results('SELECT * FROM handball_match
             WHERE game_datetime > (DATE_SUB(CURDATE(), INTERVAL 1 WEEK)) AND game_datetime < (CURDATE())
             ORDER BY game_datetime ASC');
         return $this->mapMatches($dbMatches);

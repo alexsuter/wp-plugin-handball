@@ -21,6 +21,7 @@ class HandballTeamList extends WP_List_Table
     {
         return [
             'team_id' => 'SHV Team ID',
+            'saison' => 'Saison',
             'team_name' => 'SHV Team Name'
         ];
     }
@@ -37,7 +38,7 @@ class HandballTeamList extends WP_List_Table
         ];
 
         // TOOD use php 7 ??
-        $orderBy = (! empty($_GET['orderby'])) ? $_GET['orderby'] : 'team_id';
+        $orderBy = (! empty($_GET['orderby'])) ? $_GET['orderby'] : 'team_name';
         $order = (! empty($_GET['order'])) ? $_GET['order'] : 'asc';
 
         $this->items = $this->teamRepo->findAll($orderBy, $order);
@@ -48,6 +49,8 @@ class HandballTeamList extends WP_List_Table
         switch ($column_name) {
             case 'team_id':
                 return $item->getTeamId();
+            case 'saison':
+                return $item->getSaison();
             case 'team_name':
                 return $item->getTeamName();
         }
@@ -56,10 +59,6 @@ class HandballTeamList extends WP_List_Table
     function get_sortable_columns()
     {
         return [
-            'team_id' => [
-                'team_id',
-                false
-            ],
             'team_name' => [
                 'team_name',
                 false

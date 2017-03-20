@@ -72,17 +72,7 @@ class HandballSynchronizer
         foreach ($responseTeams as $responseTeam) {
             $id = $responseTeam->teamId;
             if (! isset($teams[$id])) {
-
-                /*
-                 * if (date('n') == '5' || date('n') == '6' || date('n') == '7' || date('n') == '8' || date('n') == '9' || date('n') == '10' || date('n') == '11' || ) {
-                 * $saison = date('y') . '' . date('y', strtotime('+1 year'));
-                 * } else {
-                 *
-                 * }
-                 */
-                // TODO
-                $saison = '1617';
-                $teams[$id] = new Team($id, $responseTeam->teamName, $saison);
+                $teams[$id] = new Team($id, $responseTeam->teamName, null);
             }
             $team = $teams[$id];
             $team->addLeague($responseTeam->leagueId, $responseTeam->groupText);

@@ -48,6 +48,7 @@ class HandballPlugin
         $publicPlugin = new HandballPublicPlugin($this->getPluginName(), $this->getVersion());
         $this->loader->add_action('widgets_init', $publicPlugin, 'upcomingMatchesWidget');
         $this->loader->add_action('widgets_init', $publicPlugin, 'playedMatchesWidget');
+        $this->loader->add_action('init', $publicPlugin, 'customPostTypeMatch');
     }
 
     private function getPluginName()

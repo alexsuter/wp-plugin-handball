@@ -1,2 +1,2 @@
-DROP TABLE hcg_match;
-DROP TABLE hcg_team;
+DROP TABLE handball_match;
+DROP TABLE handball_team;
