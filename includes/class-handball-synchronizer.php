@@ -83,7 +83,17 @@ class HandballSynchronizer
 
     private function fetchMatches($teamId)
     {
-        $responseMatches = $this->fetchBody($this->apiUrl . '/teams/' . $teamId . '/games');
+        // Hack, because API limits always to 30
+        $responseMatchesPlanned = $this->fetchBody($this->apiUrl . '/teams/' . $teamId . '/games?status=planned');
+        $responseMatchesPlayed = $this->fetchBody($this->apiUrl . '/teams/' . $teamId . '/games?status=played');
+
+        $responseMatches = [];
+        foreach ($responseMatchesPlanned as $match) {
+            $responseMatches[] = $match;
+        }
+        foreach ($responseMatchesPlayed as $match) {
+            $responseMatches[] = $match;
+        }
 
         $matches = [];
         foreach ($responseMatches as $responseMatch) {
