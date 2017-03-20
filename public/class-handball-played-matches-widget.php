@@ -19,8 +19,6 @@ class HandballPlayedMatchesWidget extends WP_Widget
         foreach ($matches as $match) {
             $output = mysql2date('d.m.Y h:i', $match->getGameDateTime());
             $output .= ' Uhr <br />';
-            $output .= $match->getVenue();
-            $output .= '<br />';
             $output .= $match->getTeamAName();
             $output .= ' - ';
             $output .= $match->getTeamBName();

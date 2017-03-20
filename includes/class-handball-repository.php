@@ -43,11 +43,13 @@ class HandballTeamRepository
         }
     }
 
-    public function findAll($orderBy = 'id', $order = 'ASC')
+    public function findAll($orderBy = 'team_id', $order = 'ASC')
     {
-        $orderByClause = 'ORDER BY ' . $orderBy . ' ' . $order; // TODO CHECK OF INJECTION
-
-        $dbTeams = $this->wpdb->get_results('SELECT * FROM hcg_team ' . $orderByClause);
+        $orderByClause = sanitize_sql_orderby($orderBy . ' ' . $order);
+        if (!$orderByClause) {
+            $orderByClause = 'team_id ASC';
+        }
+        $dbTeams = $this->wpdb->get_results('SELECT * FROM hcg_team ORDER BY ' . $orderByClause);
 
         $teams = [];
         foreach ($dbTeams as $dbTeam) {
