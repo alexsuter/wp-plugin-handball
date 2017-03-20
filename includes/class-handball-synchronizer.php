@@ -4,12 +4,17 @@ require_once ('class-handball-repository.php');
 
 class HandballSynchronizer
 {
+
     private $apiUrl;
+
     private $apiUsername;
+
     private $apiPassword;
+
     private $clubId;
 
     private $teamRepo;
+
     private $matchRepo;
 
     public function __construct($apiUrl, $apiUsername, $apiPassword, $clubId)
@@ -24,6 +29,10 @@ class HandballSynchronizer
 
     public function start()
     {
+        if (! $this->validConfig()) {
+            return;
+        }
+
         $teams = $this->fetchTeams($this->clubId);
 
         foreach ($teams as $team) {
@@ -38,6 +47,23 @@ class HandballSynchronizer
         }
     }
 
+    private function validConfig()
+    {
+        if (empty($this->apiUrl)) {
+            return false;
+        }
+        if (empty($this->apiUsername)) {
+            return false;
+        }
+        if (empty($this->apiPassword)) {
+            return false;
+        }
+        if (empty($this->clubId)) {
+            return false;
+        }
+        return true;
+    }
+
     private function fetchTeams($clubId)
     {
         $responseTeams = $this->fetchBody($this->apiUrl . '/clubs/' . $clubId . '/teams');
@@ -47,11 +73,13 @@ class HandballSynchronizer
             $id = $responseTeam->teamId;
             if (! isset($teams[$id])) {
 
-                /*if (date('n') == '5' || date('n') == '6' ||  date('n') == '7' ||  date('n') == '8' ||  date('n') == '9' ||  date('n') == '10' ||  date('n') == '11' || ) {
-                    $saison = date('y') . '' .  date('y', strtotime('+1 year'));
-                } else {
-
-                }*/
+                /*
+                 * if (date('n') == '5' || date('n') == '6' || date('n') == '7' || date('n') == '8' || date('n') == '9' || date('n') == '10' || date('n') == '11' || ) {
+                 * $saison = date('y') . '' . date('y', strtotime('+1 year'));
+                 * } else {
+                 *
+                 * }
+                 */
                 // TODO
                 $saison = '1617';
                 $teams[$id] = new Team($id, $responseTeam->teamName, $saison);

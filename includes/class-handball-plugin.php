@@ -28,6 +28,7 @@ class HandballPlugin
     {
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-handball-plugin-loader.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-handball-admin-plugin.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-handball-public-plugin.php';
         $this->loader = new HandballPluginLoader();
     }
 
@@ -44,7 +45,9 @@ class HandballPlugin
 
     private function definePublicHocks()
     {
-
+        $publicPlugin = new HandballPublicPlugin($this->getPluginName(), $this->getVersion());
+        $this->loader->add_action('widgets_init', $publicPlugin, 'upcomingMatchesWidget');
+        $this->loader->add_action('widgets_init', $publicPlugin, 'playedMatchesWidget');
     }
 
     private function getPluginName()

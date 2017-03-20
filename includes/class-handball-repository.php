@@ -56,6 +56,7 @@ class HandballTeamRepository
 
         return $teams;
     }
+
 }
 
 class HandballMatchRepository
@@ -135,7 +136,25 @@ class HandballMatchRepository
     public function findAll()
     {
         $dbMatches = $this->wpdb->get_results('SELECT * FROM hcg_match');
+        return $this->mapMatches($dbMatches);
+    }
 
+    public function findMatchesNextWeek() {
+        $dbMatches = $this->wpdb->get_results('SELECT * FROM hcg_match
+            WHERE game_datetime < (DATE_ADD(CURDATE(), INTERVAL 1 WEEK)) AND game_datetime > (CURDATE())
+            ORDER BY game_datetime ASC');
+        return $this->mapMatches($dbMatches);
+    }
+
+    public function findMatchesLastWeek() {
+        $dbMatches = $this->wpdb->get_results('SELECT * FROM hcg_match
+            WHERE game_datetime > (DATE_SUB(CURDATE(), INTERVAL 1 WEEK)) AND game_datetime < (CURDATE())
+            ORDER BY game_datetime ASC');
+        return $this->mapMatches($dbMatches);
+    }
+
+    private function mapMatches($dbMatches)
+    {
         $matches = [];
         foreach ($dbMatches as $dbMatch) {
             $match= new Match($dbMatch->game_id, $dbMatch->game_nr, $dbMatch->fk_team_id);
@@ -144,13 +163,16 @@ class HandballMatchRepository
             $match->setGameDateTime($dbMatch->game_datetime);
             $match->setLeagueShort($dbMatch->league_short);
             $match->setLeagueLong($dbMatch->league_long);
+            $match->setTeamAScoreFT($dbMatch->team_a_score_ft);
+            $match->setTeamBScoreFT($dbMatch->team_b_score_ft);
+            $match->setTeamAScoreHT($dbMatch->team_a_score_ht);
+            $match->setTeamBScoreHT($dbMatch->team_b_score_ht);
             $match->setVenue($dbMatch->venue);
             $match->setVenueCity($dbMatch->venue_city);
             $match->setVenueZip($dbMatch->venue_zip);
             $match->setVenueAddress($dbMatch->venue_address);
             $matches[] = $match;
         }
-
         return $matches;
     }
 }
