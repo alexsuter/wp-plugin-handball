@@ -41,6 +41,9 @@ class HandballPlugin
         $this->loader->add_action('admin_menu', $adminPlugin, 'createAdminMenu');
         $this->loader->add_action('handball_synchronize_data', $adminPlugin, 'synchronize');
         $this->loader->add_action('admin_init', $adminPlugin, 'createSettingsAdmin');
+
+        $this->loader->add_action('add_meta_boxes', $adminPlugin, 'metaBoxMatch');
+        $this->loader->add_action('save_post', $adminPlugin, 'savePostdata');
     }
 
     private function definePublicHocks()
@@ -48,7 +51,8 @@ class HandballPlugin
         $publicPlugin = new HandballPublicPlugin($this->getPluginName(), $this->getVersion());
         $this->loader->add_action('widgets_init', $publicPlugin, 'upcomingMatchesWidget');
         $this->loader->add_action('widgets_init', $publicPlugin, 'playedMatchesWidget');
-        $this->loader->add_action('init', $publicPlugin, 'customPostTypeMatch');
+        $this->loader->add_action('init', $publicPlugin, 'postTypeMatch');
+        $this->loader->add_action('init', $publicPlugin, 'taxonomyMatchPostType');
     }
 
     private function getPluginName()

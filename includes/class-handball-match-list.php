@@ -26,11 +26,13 @@ class HandballMatchList extends WP_List_Table
             'league_short' => 'Liga',
             'team_a_name' => 'Team A',
             'team_b_name' => 'Team B',
-            'venue_city' => 'Ort'
+            'venue_city' => 'Ort',
+            'preview_link'  => 'Vorschau',
+            'report_link'  => 'Bericht',
         ];
     }
 
-    function prepare_items()
+    function prepare_items($nextWeek = false, $lastWeek = false)
     {
         $columns = $this->get_columns();
         $hidden = [];
@@ -41,7 +43,13 @@ class HandballMatchList extends WP_List_Table
             $sortable
         ];
 
-        $this->items = $this->matchRepo->findAll();
+        if ($nextWeek) {
+            $this->items = $this->matchRepo->findMatchesNextWeek();
+        } else if ($lastWeek) {
+            $this->items = $this->matchRepo->findMatchesLastWeek();
+        } else {
+            $this->items = $this->matchRepo->findAll();
+        }
     }
 
     function column_default($item, $column_name)
@@ -52,7 +60,7 @@ class HandballMatchList extends WP_List_Table
             case 'game_nr':
                 return $item->getGameNr();
             case 'game_datetime':
-                return mysql2date(get_option('date_format') . ' ' . get_option('time_format'), $item->getGameDateTime());
+                return $item->getGameDateTimeFormattedLong();
             case 'league_short':
                 return $item->getLeagueShort();
             case 'team_a_name':
@@ -61,7 +69,36 @@ class HandballMatchList extends WP_List_Table
                 return $item->getTeamBName();
             case 'venue_city':
                 return $item->getVenueCity();
+            case 'preview_link':
+                return $this->createActionLink($item->getGameId(), 'preview');
+            case 'report_link':
+                return $this->createActionLink($item->getGameId(), 'report');
         }
     }
 
+    private function createActionLink($gameId, $gameReportType)
+    {
+        $loop = new WP_Query([
+            'post_type' => 'handball_match',
+            'meta_query' => [
+                [
+                    'key' => 'handball_game_id',
+                    'value' => $gameId
+                ], [
+                    'key' => 'handball_game_report_type',
+                    'value' => $gameReportType
+                ]
+            ]
+        ]);
+
+        $text = 'Erstellen';
+        $url  = '/wp-admin/post-new.php?post_type=handball_match&handball_game_report_type='.$gameReportType.'&handball_game_id='.$gameId;
+        if ($loop->have_posts()) {
+            $loop->the_post();
+            $text = 'Bearbeiten';
+            $url = '/wp-admin/post.php?post='.$loop->post->ID.'&action=edit';
+        }
+
+        return '<a href="'.$url.'">'.$text.'</a>';
+    }
 }

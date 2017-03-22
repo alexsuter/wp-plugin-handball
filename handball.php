@@ -1,6 +1,7 @@
 <?php
 /*
 Plugin Name: Handball
+Plugin URI: https://github.com/alexsuter/wp-plugin-handball
 Description: This plugin imports all teams and matches over the SHV rest api and keep them up to date.
 Author: HCG Dev Team
 Version: 0.1

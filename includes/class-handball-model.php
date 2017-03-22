@@ -39,7 +39,7 @@ class Team
 
     public function getSaison()
     {
-        return $this->saison;
+        return new Saison($this->saison);
     }
 
     public function addLeague($id, $groupText)
@@ -68,7 +68,26 @@ class Team
     }
 }
 
-class League
+class Saison
+{
+    private $value;
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
+    public function getValue() {
+        return $this->value;
+    }
+    public function formattedLong() {
+        return substr_replace($this->value, '/', 4, 0);
+    }
+
+    public function formattedShort() {
+        return substr($this->value, 2, 2) . '/' . substr($this->value, 6, 2);
+    }
+}
+
+class League implements JsonSerializable
 {
 
     private $leagueId;
@@ -89,6 +108,11 @@ class League
     public function getGroupText()
     {
         return $this->groupText;
+    }
+
+    public function jsonSerialize()
+    {
+        return get_object_vars($this);
     }
 }
 
@@ -190,6 +214,14 @@ class Match
     public function getGameDateTime()
     {
         return $this->gameDateTime;
+    }
+
+    public function getGameDateTimeFormattedLong() {
+        return mysql2date('d.m.Y h:i', $this->getGameDateTime());
+    }
+
+    public function getGameDateTimeFormattedShort() {
+        return mysql2date('d.m.y h:i', $this->getGameDateTime());
     }
 
     public function setGameTypeLong($gameTypeLong)

@@ -1,17 +1,19 @@
 <?php
 require_once ('class-handball-model.php');
 
-class HandballTeamRepository
+abstract class Repository
 {
-
-    private $wpdb;
+    protected $wpdb;
 
     public function __construct()
     {
         global $wpdb;
         $this->wpdb = $wpdb;
     }
+}
 
+class HandballTeamRepository extends Repository
+{
     public function saveTeam(Team $team)
     {
         // apply saion
@@ -25,10 +27,12 @@ class HandballTeamRepository
         $data = [
             'team_id' => $team->getTeamId(),
             'team_name' => $team->getTeamName(),
-            'saison' => $team->getSaison()
+            'saison' => $team->getSaison()->getValue(),
+            'leagues_json' => json_encode($team->getLeagues())
         ];
         $format = [
             '%d',
+            '%s',
             '%s',
             '%s'
         ];
@@ -60,35 +64,36 @@ class HandballTeamRepository
         return $saison;
     }
 
-    public function findAll($orderBy = 'team_id', $order = 'ASC')
+    public function findAll($saison)
     {
-        $orderByClause = sanitize_sql_orderby($orderBy . ' ' . $order);
-        if (!$orderByClause) {
-            $orderByClause = 'team_id ASC';
-        }
-        $dbTeams = $this->wpdb->get_results('SELECT * FROM handball_team ORDER BY ' . $orderByClause);
-
+        // TODO sanitizse
+        $dbTeams = $this->wpdb->get_results('SELECT * FROM handball_team WHERE saison=\''.$saison.'\'');
         $teams = [];
         foreach ($dbTeams as $dbTeam) {
-            $teams[] = new Team($dbTeam->team_id, $dbTeam->team_name, $dbTeam->saison);
+            $team = new Team($dbTeam->team_id, $dbTeam->team_name, $dbTeam->saison);
+            $leagues = json_decode($dbTeam->leagues_json);
+            foreach ($leagues as $league) {
+                $team->addLeague($league->leagueId, $league->groupText);
+            }
+            $teams[] = $team;
         }
-
         return $teams;
     }
 
 }
 
-class HandballMatchRepository
+class HandballSaisonRepository extends Repository
 {
-
-    private $wpdb;
-
-    public function __construct()
+    public function findAll()
     {
-        global $wpdb;
-        $this->wpdb = $wpdb;
+        $saisons = $this->wpdb->get_results('SELECT DISTINCT saison FROM handball_team ORDER BY saison ASC');
+        $map = array_map(function ($saison) { return new Saison($saison->saison); }, $saisons);
+        return $map;
     }
+}
 
+class HandballMatchRepository extends Repository
+{
     public function saveMatch(Match $match)
     {
         $data = [
@@ -154,7 +159,7 @@ class HandballMatchRepository
 
     public function findAll()
     {
-        $dbMatches = $this->wpdb->get_results('SELECT * FROM handball_match');
+        $dbMatches = $this->wpdb->get_results('SELECT * FROM handball_match ORDER BY game_datetime');
         return $this->mapMatches($dbMatches);
     }
 

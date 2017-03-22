@@ -1,7 +1,8 @@
 CREATE TABLE handball_team (
 	team_id INT primary key,
 	team_name VARCHAR(255) NOT NULL,
-	saison VARCHAR(8) NOT NULL
+	saison VARCHAR(8) NOT NULL,
+	leagues_json TEXT NULL
 );
 
 CREATE TABLE handball_match (
