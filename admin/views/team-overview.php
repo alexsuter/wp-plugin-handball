@@ -7,7 +7,13 @@ require_once(plugin_dir_path(__FILE__) . '../../includes/class-handball-team-lis
 
 $teamList = new HandballTeamList();
 $teamList->prepare_items();
+?>
 
-echo '<div class="wrap"><h1>Teams</h1>';
-$teamList->display();
-echo '</div>';
+<div class="wrap">
+	<h1>Teams</h1>
+	<?= $teamList->display() ?>
+</div>
+
+<style type="text/css">
+    .column-saison { width:50px !important; overflow:hidden }
+</style>

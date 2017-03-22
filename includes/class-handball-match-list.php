@@ -20,15 +20,11 @@ class HandballMatchList extends WP_List_Table
     function get_columns()
     {
         return [
-            'game_id' => 'SHV Game ID',
-            'game_nr' => 'SHV Game Nr',
-            'game_datetime' => 'Datum',
-            'league_short' => 'Liga',
-            'team_a_name' => 'Team A',
-            'team_b_name' => 'Team B',
-            'venue_city' => 'Ort',
-            'preview_link'  => 'Vorschau',
-            'report_link'  => 'Bericht',
+            'datetime' => 'Datum',
+            'league' => 'Liga',
+            'encounter' => 'Begegnung',
+            'venue' => 'Ort',
+            'actions'  => 'Aktionen',
         ];
     }
 
@@ -59,20 +55,17 @@ class HandballMatchList extends WP_List_Table
                 return $item->getGameId();
             case 'game_nr':
                 return $item->getGameNr();
-            case 'game_datetime':
-                return $item->getGameDateTimeFormattedLong();
-            case 'league_short':
+            case 'datetime':
+                return $item->getGameDateTimeFormattedShort();
+            case 'league':
                 return $item->getLeagueShort();
-            case 'team_a_name':
-                return $item->getTeamAName();
-            case 'team_b_name':
-                return $item->getTeamBName();
-            case 'venue_city':
-                return $item->getVenueCity();
-            case 'preview_link':
-                return $this->createActionLink($item->getGameId(), 'preview');
-            case 'report_link':
-                return $this->createActionLink($item->getGameId(), 'report');
+            case 'encounter':
+                return $item->getEncounter() . '<br />' . $item->getScore();
+            case 'venue':
+                return $item->getVenue();
+            case 'actions':
+                return $this->createActionLink($item->getGameId(), 'preview')
+                . '<br />' . $this->createActionLink($item->getGameId(), 'report');
         }
     }
 
@@ -91,14 +84,19 @@ class HandballMatchList extends WP_List_Table
             ]
         ]);
 
-        $text = 'Erstellen';
+        $type = 'Bericht';
+        if ($gameReportType == 'preview') {
+            $type = 'Vorschau';
+        }
+
+        $icon = 'plus';
         $url  = '/wp-admin/post-new.php?post_type=handball_match&handball_game_report_type='.$gameReportType.'&handball_game_id='.$gameId;
         if ($loop->have_posts()) {
             $loop->the_post();
-            $text = 'Bearbeiten';
+            $icon = 'edit';
             $url = '/wp-admin/post.php?post='.$loop->post->ID.'&action=edit';
         }
 
-        return '<a href="'.$url.'">'.$text.'</a>';
+        return '</div><a class="wp-menu-image dashicons-before dashicons-'.$icon.'" href="'.$url.'">'.$type .'</a>';
     }
 }

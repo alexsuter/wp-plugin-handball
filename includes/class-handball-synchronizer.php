@@ -138,10 +138,4 @@ class HandballSynchronizer
         ];
     }
 
-    private static function log($content)
-    {
-        $myfile = fopen(dirname(__FILE__) . '/log.txt', 'a');
-        fwrite($myfile, $content . "\n");
-        fclose($myfile);
-    }
 }

@@ -19,7 +19,7 @@ class HandballTeamList extends WP_List_Table
         $this->teamRepo = new HandballTeamRepository();
         $this->saisonRepo = new HandballSaisonRepository();
 
-        $this->filterSaison = '20162017'; // TODO current sasion
+        $this->filterSaison = Saison::getCurrentSaison()->getValue();
         if (isset($_GET['saison_filter'])) {
             $this->filterSaison = $_GET['saison_filter'];
         }
@@ -28,8 +28,7 @@ class HandballTeamList extends WP_List_Table
     function get_columns()
     {
         return [
-            'saison' => 'Saison',
-            'team_name' => 'SHV Team Name',
+            'team_name' => 'Team',
             'leagues' => 'Liga'
         ];
     }
@@ -70,6 +69,7 @@ class HandballTeamList extends WP_List_Table
     {
         if ($which == "top") {
             $saisons = $this->saisonRepo->findAll();
+            $url = add_query_arg('saison_filter', '');
             if (!empty($saisons)){
                 ?>
                 Saison <select name="saison-filter" class="handball-saison-filter">
@@ -89,8 +89,7 @@ class HandballTeamList extends WP_List_Table
             jQuery(document).ready(function($){
             	$('.handball-saison-filter').change(function(){
                     var saison = $(this).val();
-                    // TODO link
-                    document.location.href = 'admin.php?page=handball_team&saison_filter=' + saison;
+                    document.location.href = '<?= $url ?>=' + saison;
                 });
             });
             </script>

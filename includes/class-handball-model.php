@@ -85,6 +85,21 @@ class Saison
     public function formattedShort() {
         return substr($this->value, 2, 2) . '/' . substr($this->value, 6, 2);
     }
+
+    public static function getCurrentSaison()
+    {
+        $saison = '';
+        $currentMonth = intval(date('n'));
+        $currentYear = date('Y');
+        if ($currentMonth < 5) {
+            $lastYear = date('Y', strtotime('-1 year'));
+            $saison = $lastYear . $currentYear;
+        } else {
+            $nextYear = date('Y', strtotime('+1 year'));
+            $saison = $currentYear . $nextYear;
+        }
+        return new Saison($saison);
+    }
 }
 
 class League implements JsonSerializable
@@ -217,11 +232,11 @@ class Match
     }
 
     public function getGameDateTimeFormattedLong() {
-        return mysql2date('d.m.Y h:i', $this->getGameDateTime());
+        return mysql2date('d.m.Y H:i', $this->getGameDateTime());
     }
 
     public function getGameDateTimeFormattedShort() {
-        return mysql2date('d.m.y h:i', $this->getGameDateTime());
+        return mysql2date('d.m.y H:i', $this->getGameDateTime());
     }
 
     public function setGameTypeLong($gameTypeLong)
@@ -382,6 +397,16 @@ class Match
     public function getRoundNr()
     {
         return $this->roundNr;
+    }
+
+    public function getEncounter() {
+        return $this->getTeamAName() . ' - ' . $this->getTeamBName();
+    }
+
+    public function getScore() {
+        return $this->getTeamAScoreFT() . ':' . $this->getTeamBScoreFT()
+        . ' (' . $this->getTeamAScoreHT() . ':' . $this->getTeamBScoreHT() . ')'
+        ;
     }
 
     public function toString()
