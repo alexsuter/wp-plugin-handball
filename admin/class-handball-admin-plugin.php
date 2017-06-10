@@ -134,36 +134,64 @@ class HandballAdminPlugin
     }
 
     public function createAdminMenu() {
+        $capability = 'manage_options'; // TODO Create own capability
+
         add_menu_page(
             'Handball',
             'Handball',
-            'manage_options', // TODO Create own capability
-            'handball_team',
+            $capability,
+            'handball_match',
             null,
             'dashicons-awards',
             20
         );
 
         add_submenu_page(
-            'handball_team',
-            'Teams',
-            'Teams',
-            'manage_options',  // TODO Create own capability
-            'handball_team',
-            function () {
-                include(plugin_dir_path(__FILE__) . 'views/team-overview.php');
-            }
-        );
-
-        add_submenu_page(
-            'handball_team',
+            'handball_match',
             'Spiele',
             'Spiele',
-            'manage_options',  // TODO Create own capability
+            $capability,
             'handball_match',
             function () {
                 include(plugin_dir_path(__FILE__) . 'views/match-overview.php');
             }
         );
+
+        add_submenu_page(
+            'handball_match',
+            'Teams',
+            'Teams',
+            $capability,
+            'handball_team',
+            function () {
+                include(plugin_dir_path(__FILE__) . 'views/team-overview.php');
+            }
+        );
+    }
+
+    public function initRestApis() {
+        register_rest_route('handball', '/teams/(?P<teamId>\d+)', [
+            'methods' => 'POST',
+            'callback' => 'handballUpdateTeam',
+        ]);
+
+        function handballUpdateTeam(WP_REST_Request $request) {
+            $teamId = $request->get_param('teamId');
+
+            $repo = new HandballTeamRepository();
+            $team = $repo->findById($teamId);
+
+            if (isset($request->get_params()['sort'])) {
+                $team->setSort($request->get_param('sort'));
+            }
+
+            if (isset($request->get_params()['imageId'])) {
+                $team->setImageId($request->get_param('imageId'));
+            }
+
+            $repo->saveTeam($team);
+
+            return 1;
+        }
     }
 }

@@ -4,7 +4,8 @@ if (! current_user_can('manage_options')) { // TODO Create own capability
 }
 
 require_once(plugin_dir_path(__FILE__) . '../../includes/class-handball-match-list.php');
-$page= isset($_GET['subpage']) ? $_GET['subpage'] : 'recent';
+
+$page = $_GET['subpage'] ?? 'recent';
 
 echo '<div class="wrap"><h1>Spiele</h1>';
 

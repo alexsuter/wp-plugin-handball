@@ -18,16 +18,34 @@ class HandballTeamList extends WP_List_Table
         parent::__construct($args);
         $this->teamRepo = new HandballTeamRepository();
         $this->saisonRepo = new HandballSaisonRepository();
-
         $this->filterSaison = Saison::getCurrentSaison()->getValue();
         if (isset($_GET['saison_filter'])) {
             $this->filterSaison = $_GET['saison_filter'];
         }
+        ?>
+        <style>
+        .handball-team-sort-field {
+            width:40px;
+        }
+        </style>
+        <script>
+        jQuery(document).ready(function($) {
+        	$('.handball-team-sort-field, .handball-team-image-id-field').change(function(){
+                var value = $(this).val();
+                var teamId = $(this).data('team-id');
+                var attribute = $(this).data('attribute');
+                $.post("/wp-json/handball/teams/" + teamId + "?"+attribute+"=" + value);
+            });
+        });
+        </script>
+        <?php
     }
 
     function get_columns()
     {
         return [
+            'sort' => 'Sortierung',
+            'image' => 'Bild',
             'team_name' => 'Team',
             'leagues' => 'Liga'
         ];
@@ -49,13 +67,37 @@ class HandballTeamList extends WP_List_Table
 
     function column_default($item, $column_name)
     {
+        // TODO
+        $imagesQuery = new WP_Query([
+            'post_type' => 'attachment',
+            'post_mime_type' => 'image',
+            'post_status' => 'inherit',
+            // 'posts_per_page' => - 1
+        ]);
+
+        $imageOptions = [
+            '<option value="">Kein Bild</option>'
+        ];
+        foreach ($imagesQuery->posts as $image) {
+            $selected = '';
+            if ($image->ID == $item->getImageId()) {
+                $selected = 'selected';
+            }
+            $imageOptions[] = '<option '.$selected.' value="'.$image->ID.'">'.get_the_title($image->ID).'</option>';
+        }
+
         switch ($column_name) {
             case 'team_id':
                 return $item->getTeamId();
+            case 'sort':
+                return '<input data-attribute="sort" data-team-id="'.$item->getTeamId().'" class="handball-team-sort-field" onkeypress="return event.charCode >= 48 && event.charCode <= 57" type="text" value="' . $item->getSort() . '"></input>';
+            case 'image':
+                return '<select data-attribute="imageId" data-team-id="'.$item->getTeamId().'" class="handball-team-image-id-field">'.implode($imageOptions).'</select>';
             case 'saison':
                 return $item->getSaison()->formattedShort();
             case 'team_name':
-                return $item->getTeamName() . ' (' . $item->getTeamId() . ')';
+                $link = $item->getTeamUrl();
+                return '<a href="'.$link.'">' . $item->getTeamName() . ' ' . $item->getLeagueShort() . ' (' . $item->getTeamId() . ')</a><br />' . $item->getLeagueLong();
             case 'leagues':
                 $output = [];
                 foreach ($item->getLeagues() as $league) {

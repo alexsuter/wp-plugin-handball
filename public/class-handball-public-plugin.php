@@ -25,46 +25,53 @@ class HandballPublicPlugin
         register_widget('HandballPlayedMatchesWidget');
     }
 
-    public function taxonomyMatchPostType()
+    public function addTeamsToMenu($items, $menu)
     {
-        /*$labels = [
-            'name'              => _x('Courses', 'taxonomy general name'),
-            'singular_name'     => _x('Course', 'taxonomy singular name'),
-            'search_items'      => __('Search Courses'),
-            'all_items'         => __('All Courses'),
-            'parent_item'       => __('Parent Course'),
-            'parent_item_colon' => __('Parent Course:'),
-            'edit_item'         => __('Edit Course'),
-            'update_item'       => __('Update Course'),
-            'add_new_item'      => __('Add New Course'),
-            'new_item_name'     => __('New Course Name'),
-            'menu_name'         => __('Course'),
-        ];
-        $args = [
-            'hierarchical'      => false,
-            'labels'            => $labels,
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'query_var'         => true,
-            'rewrite'           => ['slug' => 'course'],
-        ];
-        register_taxonomy('match_post_type', ['handball_match'], $args);
+        if ($menu->slug == 'hauptmenue') {
+            $itemTeamId = null;
+            foreach ($items as $item) {
+                if ($item->url == '/teams') {
+                    $itemTeamId = $item->ID;
+                }
+            }
+            if ($itemTeamId == null) {
+                return $items;
+            }
+            $currentSaison = Saison::getCurrentSaison();
+            $teams = (new HandballTeamRepository())->findAll($currentSaison->getValue());
+            $order = 10000;
+            foreach ($teams as $team) {
+                $title = $team->getTeamName() . ' ' . $team->getLeagueShort();
+                $url = '/teams/' . $team->getTeamId();
+                $items[] = self::createCustomNavMenuItem($title, $url, ++ $order, $itemTeamId);
+            }
+        }
+        return $items;
+    }
 
-        wp_insert_term(
-            'Game Preview', // the term
-            'match_post_type', // the taxonomy
-            array(
-                'slug' => 'game-preview',
-            )
-            );
+    private static function createCustomNavMenuItem($title, $url, $order, $parent = 0)
+    {
+        $item = new stdClass();
+        $item->ID = 1000000 + $order + $parent;
+        $item->db_id = $item->ID;
+        $item->title = $title;
+        $item->url = $url;
+        $item->menu_order = $order;
+        $item->menu_item_parent = $parent;
+        $item->type = '';
+        $item->object = '';
+        $item->object_id = '';
+        $item->classes = [];
+        $item->target = '';
+        $item->attr_title = '';
+        $item->description = '';
+        $item->xfn = '';
+        $item->status = '';
+        return $item;
+    }
 
-        wp_insert_term(
-            'Game Report', // the term
-            'match_post_type', // the taxonomy
-            array(
-                'slug' => 'game-report',
-            )
-            );*/
+    public function teamSite()
+    {
     }
 
     public function postTypeMatch()
@@ -79,4 +86,5 @@ class HandballPublicPlugin
             'rewrite'     => ['slug' => 'bericht'],
         ]);
     }
+
 }

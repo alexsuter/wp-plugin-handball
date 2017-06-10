@@ -12,6 +12,11 @@ CREATE TABLE handball_match (
 	team_b_name VARCHAR(255) NULL
 );
 
+ALTER TABLE handball_team ADD COLUMN league_long VARCHAR(255);
+ALTER TABLE handball_team ADD COLUMN league_short VARCHAR(255);
+ALTER TABLE handball_team ADD COLUMN sort INTEGER;
+ALTER TABLE handball_team ADD COLUMN image_id INTEGER;
+
 ALTER TABLE handball_match ADD COLUMN game_datetime DATETIME;
 ALTER TABLE handball_match ADD COLUMN game_type_long VARCHAR(255);
 ALTER TABLE handball_match ADD COLUMN game_type_short VARCHAR(255);

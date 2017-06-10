@@ -7,11 +7,19 @@ class Team
 
     private $teamName;
 
+    private $leagueLong;
+
+    private $leagueShort;
+
     private $saison;
 
     private $leagues;
 
     private $matches;
+
+    private $sort;
+
+    private $imageId;
 
     public function __construct($teamId, $teamName, $saison)
     {
@@ -25,6 +33,50 @@ class Team
     public function getTeamId()
     {
         return $this->teamId;
+    }
+
+    public function getLeagueLong()
+    {
+        return $this->leagueLong;
+    }
+
+    public function setLeagueLong($leagueLong)
+    {
+        $this->leagueLong = $leagueLong;
+    }
+
+    public function getLeagueShort()
+    {
+        return $this->leagueShort;
+    }
+
+    public function setImageId($imageId)
+    {
+        $this->imageId = $imageId;
+    }
+
+    public function getTeamUrl() {
+        return '/teams/' . $this->getTeamId();
+    }
+
+    public function getImageId()
+    {
+        return $this->imageId;
+    }
+
+    public function hasImage()
+    {
+        return wp_attachment_is_image($this->imageId);
+    }
+
+    public function getImageUrl()
+    {
+        return wp_get_attachment_url($this->getImageId());
+    }
+
+    public function setLeagueShort($leagueShort)
+    {
+        $this->leagueShort = $leagueShort;
     }
 
     public function getTeamName()
@@ -62,6 +114,16 @@ class Team
         return $this->matches;
     }
 
+    public function getSort()
+    {
+        return $this->sort;
+    }
+
+    public function setSort($sort)
+    {
+        $this->sort = $sort;
+    }
+
     public function toString()
     {
         return 'Team [id=' . $this->teamId . ' name=' . $this->teamName . ' leagues=' . count($this->leagues) . ' matches=' . count($this->matches) . ']';
@@ -70,23 +132,30 @@ class Team
 
 class Saison
 {
+
     private $value;
+
     public function __construct($value)
     {
         $this->value = $value;
     }
-    public function getValue() {
+
+    public function getValue()
+    {
         return $this->value;
     }
-    public function formattedLong() {
+
+    public function formattedLong()
+    {
         return substr_replace($this->value, '/', 4, 0);
     }
 
-    public function formattedShort() {
+    public function formattedShort()
+    {
         return substr($this->value, 2, 2) . '/' . substr($this->value, 6, 2);
     }
 
-    public static function getCurrentSaison()
+    public static function getCurrentSaison(): Saison
     {
         $saison = '';
         $currentMonth = intval(date('n'));
@@ -407,6 +476,52 @@ class Match
         return $this->getTeamAScoreFT() . ':' . $this->getTeamBScoreFT()
         . ' (' . $this->getTeamAScoreHT() . ':' . $this->getTeamBScoreHT() . ')'
         ;
+    }
+
+    public function getPostPreview() {
+        return $this->findPost('preview');
+    }
+
+    public function getPostPreviewUrl() {
+        $post = $this->getPostPreview();
+        return self::getPermalinkForPost($post);
+    }
+
+    public function getPostReport() {
+        return $this->findPost('report');
+    }
+
+    public function getPostReportUrl() {
+        $post = $this->getPostReport();
+        return self::getPermalinkForPost($post);
+    }
+
+    private static function getPermalinkForPost($post) {
+        if ($post == null) {
+            return null;
+        }
+        return get_permalink($post);
+    }
+
+    private function findPost($gameReportType)
+    {
+        $postQuery = new WP_Query([
+            'post_type' => 'handball_match',
+            'meta_query' => [
+                [
+                    'key' => 'handball_game_id',
+                    'value' => $this->gameId
+                ], [
+                    'key' => 'handball_game_report_type',
+                    'value' => $gameReportType
+                ]
+            ]
+        ]);
+        if ($postQuery->have_posts()) {
+            $postQuery->the_post();
+            return $postQuery->post;
+        }
+        return null;
     }
 
     public function toString()

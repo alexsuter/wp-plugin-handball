@@ -72,10 +72,19 @@ class HandballSynchronizer
         foreach ($responseTeams as $responseTeam) {
             $id = $responseTeam->teamId;
             if (! isset($teams[$id])) {
-                $teams[$id] = new Team($id, $responseTeam->teamName, null);
+                $existingTeam = $this->teamRepo->findById($id);
+                if ($existingTeam == null) {
+                    $teams[$id] = new Team($id, $responseTeam->teamName, Saison::getCurrentSaison()->getValue());
+                } else {
+                    $teams[$id] = $existingTeam;
+                }
             }
             $team = $teams[$id];
             $team->addLeague($responseTeam->leagueId, $responseTeam->groupText);
+
+            $responseDetailTeam = $this->fetchBody($this->apiUrl . '/teams/' . $team->getTeamId());
+            $team->setLeagueLong($responseDetailTeam->leagueLong);
+            $team->setLeagueShort($responseDetailTeam->leagueShort);
         }
 
         return $teams;

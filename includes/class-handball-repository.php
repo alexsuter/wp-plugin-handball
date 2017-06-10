@@ -10,79 +10,89 @@ abstract class Repository
         global $wpdb;
         $this->wpdb = $wpdb;
     }
+
+    protected function mapObjects($rows)
+    {
+        return array_map([$this, 'mapObject'], $rows);
+    }
+
+    protected function findOne($query)
+    {
+        $row = $this->wpdb->get_row($query);
+        return $row ? $this->mapObject($row) : null;
+    }
+
+    protected function findMultiple($query)
+    {
+        $results = $this->wpdb->get_results($query);
+        return $this->mapObjects($results);
+    }
 }
 
 class HandballTeamRepository extends Repository
 {
     public function saveTeam(Team $team)
     {
-        // Apply saison
-        $existingTeam = $this->findById($team->getTeamId());
-        if ($existingTeam == null) {
-            $team->setSaison(Saison::getCurrentSaison()->getValue());
-        } else {
-            $team->setSaison($existingTeam->getSaison()->getValue());
-        }
-
         // Save Team
         $data = [
             'team_id' => $team->getTeamId(),
             'team_name' => $team->getTeamName(),
             'saison' => $team->getSaison()->getValue(),
-            'leagues_json' => json_encode($team->getLeagues())
+            'leagues_json' => json_encode($team->getLeagues()),
+            'league_short' => $team->getLeagueShort(),
+            'league_long' => $team->getLeagueLong(),
+            'sort' => $team->getSort(),
+            'image_id' => $team->getImageId()
         ];
         $format = [
             '%d',
             '%s',
             '%s',
-            '%s'
+            '%s',
+            '%s',
+            '%s',
+            '%d',
+            '%d'
         ];
-        if ($existingTeam == null) {
-            $this->wpdb->insert('handball_team', $data, $format);
+        if ($this->existsTeam($team->getTeamId())) {
+            $this->wpdb->update('handball_team', $data, ['team_id' => $team->getTeamId()], $format, ['%d']);
         } else {
-            $this->wpdb->update('handball_team', $data, [
-                'team_id' => $team->getTeamId()
-            ], $format, [
-                '%d'
-            ]);
+            $this->wpdb->insert('handball_team', $data, $format);
         }
     }
 
-    public function findAll($saison)
+    private function existsTeam($teamId)
     {
-        $query = $this->wpdb->prepare('SELECT * FROM handball_team WHERE saison = %s', $saison);
-        $results = $this->wpdb->get_results($query);
-        return $this->mapTeams($results);
+        return $this->findById($teamId) != null;
     }
 
-    private function findById($id)
+    public function findAll($saison): array
+    {
+        $query = $this->wpdb->prepare('SELECT * FROM handball_team WHERE saison = %s ORDER BY saison DESC, sort ASC', $saison);
+        return $this->findMultiple($query);
+    }
+
+    public function findById($id)
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_team WHERE team_id = %d', $id);
-        $row = $this->wpdb->get_row($query);
-        return $row ? $this->mapTeam($row) : null;
+        return $this->findOne($query);
     }
 
-    private function mapTeam($dbTeam)
+    protected function mapObject($row): Team
     {
-        $team = new Team($dbTeam->team_id, $dbTeam->team_name, $dbTeam->saison);
-        if (!empty($dbTeam->leagues_json)) {
-            $leagues = json_decode($dbTeam->leagues_json);
+        $team = new Team($row->team_id, $row->team_name, $row->saison);
+        $team->setLeagueLong($row->league_long);
+        $team->setLeagueShort($row->league_short);
+        $team->setSort($row->sort);
+        $team->setImageId($row->image_id);
+        if (!empty($row->leagues_json)) {
+            $leagues = json_decode($row->leagues_json);
             foreach ($leagues as $league) {
                 $team->addLeague($league->leagueId, $league->groupText);
             }
         }
         return $team;
     }
-
-    private function mapTeams($dbTeams)
-    {
-        $teams = [];
-        foreach ($dbTeams as $dbTeam) {
-            $teams[] = $this->mapTeam($dbTeam);
-        }
-        return $teams;
-    }
-
 }
 
 class HandballSaisonRepository extends Repository
@@ -160,64 +170,59 @@ class HandballMatchRepository extends Repository
         }
     }
 
-    public function findAll()
+    public function findAll(): array
     {
-        $dbMatches = $this->wpdb->get_results('SELECT * FROM handball_match ORDER BY game_datetime');
-        return $this->mapMatches($dbMatches);
+        return $this->findMultiple('SELECT * FROM handball_match ORDER BY game_datetime');
     }
 
-    public function findMatchesNextWeek() {
-        $dbMatches = $this->wpdb->get_results('SELECT * FROM handball_match
+    public function findMatchesForTeam($teamId): array
+    {
+        $query = $this->wpdb->prepare('SELECT * FROM handball_match WHERE fk_team_id = %d ORDER BY game_datetime', $teamId);
+        return $this->findMultiple($query);
+    }
+
+    public function findMatchesNextWeek(): array {
+        $query = 'SELECT * FROM handball_match
             WHERE game_datetime < (DATE_ADD(CURDATE(), INTERVAL 1 WEEK)) AND game_datetime > (CURDATE())
-            ORDER BY game_datetime ASC');
-        return $this->mapMatches($dbMatches);
+            ORDER BY game_datetime ASC';
+        return $this->findMultiple($query);
     }
 
-    public function findMatchesLastWeek() {
-        $dbMatches = $this->wpdb->get_results('SELECT * FROM handball_match
+    public function findMatchesLastWeek(): array {
+        $query = 'SELECT * FROM handball_match
             WHERE game_datetime > (DATE_SUB(CURDATE(), INTERVAL 1 WEEK)) AND game_datetime < (CURDATE())
-            ORDER BY game_datetime ASC');
-        return $this->mapMatches($dbMatches);
+            ORDER BY game_datetime ASC';
+        return $this->findMultiple($query);
     }
 
     private function findById($id)
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_match WHERE game_id = %d', $id);
-        $row = $this->wpdb->get_row($query);
-        return $row ? $this->mapMatch($row) : null;
+        return $this->findOne($query);
     }
 
-    private function mapMatch($dbMatch)
+    protected function mapObject($row)
     {
-        $match= new Match($dbMatch->game_id, $dbMatch->game_nr, $dbMatch->fk_team_id);
-        $match->setTeamAName($dbMatch->team_a_name);
-        $match->setTeamBName($dbMatch->team_b_name);
-        $match->setGameDateTime($dbMatch->game_datetime);
-        $match->setLeagueShort($dbMatch->league_short);
-        $match->setLeagueLong($dbMatch->league_long);
-        $match->setTeamAScoreFT($dbMatch->team_a_score_ft);
-        $match->setTeamBScoreFT($dbMatch->team_b_score_ft);
-        $match->setTeamAScoreHT($dbMatch->team_a_score_ht);
-        $match->setTeamBScoreHT($dbMatch->team_b_score_ht);
-        $match->setSpectators($dbMatch->spectators);
-        $match->setRoundNr($dbMatch->round_nr);
-        $match->setRound($dbMatch->round);
-        $match->setGameTypeShort($dbMatch->game_type_short);
-        $match->setGameTypeLong($dbMatch->game_type_short);
-        $match->setGameStatus($dbMatch->game_status);
-        $match->setVenue($dbMatch->venue);
-        $match->setVenueCity($dbMatch->venue_city);
-        $match->setVenueZip($dbMatch->venue_zip);
-        $match->setVenueAddress($dbMatch->venue_address);
+        $match= new Match($row->game_id, $row->game_nr, $row->fk_team_id);
+        $match->setTeamAName($row->team_a_name);
+        $match->setTeamBName($row->team_b_name);
+        $match->setGameDateTime($row->game_datetime);
+        $match->setLeagueShort($row->league_short);
+        $match->setLeagueLong($row->league_long);
+        $match->setTeamAScoreFT($row->team_a_score_ft);
+        $match->setTeamBScoreFT($row->team_b_score_ft);
+        $match->setTeamAScoreHT($row->team_a_score_ht);
+        $match->setTeamBScoreHT($row->team_b_score_ht);
+        $match->setSpectators($row->spectators);
+        $match->setRoundNr($row->round_nr);
+        $match->setRound($row->round);
+        $match->setGameTypeShort($row->game_type_short);
+        $match->setGameTypeLong($row->game_type_short);
+        $match->setGameStatus($row->game_status);
+        $match->setVenue($row->venue);
+        $match->setVenueCity($row->venue_city);
+        $match->setVenueZip($row->venue_zip);
+        $match->setVenueAddress($row->venue_address);
         return $match;
-    }
-
-    private function mapMatches($dbMatches)
-    {
-        $matches = [];
-        foreach ($dbMatches as $dbMatch) {
-            $matches[] = $this->mapMatch($dbMatch);
-        }
-        return $matches;
     }
 }

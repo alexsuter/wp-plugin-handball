@@ -34,7 +34,11 @@ class HandballPlayedMatchesWidget extends WP_Widget
             echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
         }
         echo '<div class="textwidget">';
+        if (empty($outputs)) {
+            echo 'Keine Spiele in letzter Zeit.';
+        } else {
             echo implode('<br /><br />', $outputs);
+        }
         echo '</div>';
         echo $args['after_widget'];
     }

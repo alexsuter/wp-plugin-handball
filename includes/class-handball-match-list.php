@@ -64,39 +64,29 @@ class HandballMatchList extends WP_List_Table
             case 'venue':
                 return $item->getVenue();
             case 'actions':
-                return $this->createActionLink($item->getGameId(), 'preview')
-                . '<br />' . $this->createActionLink($item->getGameId(), 'report');
+                return $this->createActionLink($item, 'preview') . '<br />' . $this->createActionLink($item, 'report');
         }
     }
 
-    private function createActionLink($gameId, $gameReportType)
+    private function createActionLink(Match $match, $gameReportType)
     {
-        $loop = new WP_Query([
-            'post_type' => 'handball_match',
-            'meta_query' => [
-                [
-                    'key' => 'handball_game_id',
-                    'value' => $gameId
-                ], [
-                    'key' => 'handball_game_report_type',
-                    'value' => $gameReportType
-                ]
-            ]
-        ]);
-
-        $type = 'Bericht';
+        $type = null;
+        $post = null;
         if ($gameReportType == 'preview') {
             $type = 'Vorschau';
+            $post = $match->getPostPreview();
+        } else {
+            $type = 'Bericht';
+            $post = $match->getPostReport();
         }
 
         $icon = 'plus';
-        $url  = '/wp-admin/post-new.php?post_type=handball_match&handball_game_report_type='.$gameReportType.'&handball_game_id='.$gameId;
-        if ($loop->have_posts()) {
-            $loop->the_post();
+        $url  = '/wp-admin/post-new.php?post_type=handball_match&handball_game_report_type=' . $gameReportType . '&handball_game_id=' . $match->getGameId();
+        if ($post != null) {
             $icon = 'edit';
-            $url = '/wp-admin/post.php?post='.$loop->post->ID.'&action=edit';
+            $url = '/wp-admin/post.php?post='.$post->ID.'&action=edit';
         }
 
-        return '</div><a class="wp-menu-image dashicons-before dashicons-'.$icon.'" href="'.$url.'">'.$type .'</a>';
+        return '<a class="wp-menu-image dashicons-before dashicons-'.$icon.'" href="'.$url.'">'.$type .'</a>';
     }
 }
