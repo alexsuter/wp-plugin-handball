@@ -33,16 +33,12 @@ class HandballTeamRepository extends Repository
 {
     public function saveTeam(Team $team)
     {
-        // Save Team
         $data = [
             'team_id' => $team->getTeamId(),
             'team_name' => $team->getTeamName(),
             'saison' => $team->getSaison()->getValue(),
-            'leagues_json' => json_encode($team->getLeagues()),
             'league_short' => $team->getLeagueShort(),
-            'league_long' => $team->getLeagueLong(),
-            'sort' => $team->getSort(),
-            'image_id' => $team->getImageId()
+            'league_long' => $team->getLeagueLong()
         ];
         $format = [
             '%d',
@@ -66,10 +62,25 @@ class HandballTeamRepository extends Repository
         return $this->findById($teamId) != null;
     }
 
-    public function findAll($saison): array
+    public function findAll(): array
     {
-        $query = $this->wpdb->prepare('SELECT * FROM handball_team WHERE saison = %s ORDER BY saison DESC, sort ASC', $saison);
+        $query = 'SELECT * FROM handball_team ORDER BY saison DESC';
         return $this->findMultiple($query);
+    }
+
+    public function findAllBySaison(?Saison $saison): array
+    {
+        if ($saison == null) {
+            return [];
+        }
+        $query = $this->wpdb->prepare('SELECT * FROM handball_team WHERE saison = %s ORDER BY saison DESC', $saison->getValue());
+        $teams = $this->findMultiple($query);
+        usort($teams, function (Team $teamA, Team $teamB) {
+            $aSort = empty($teamA->getSort()) ? 100000 : $teamA->getSort();
+            $bSort = empty($teamB->getSort()) ? 100000 : $teamB->getSort();
+            return $aSort > $bSort;
+        });
+        return $teams;
     }
 
     public function findById($id)
@@ -83,14 +94,6 @@ class HandballTeamRepository extends Repository
         $team = new Team($row->team_id, $row->team_name, $row->saison);
         $team->setLeagueLong($row->league_long);
         $team->setLeagueShort($row->league_short);
-        $team->setSort($row->sort);
-        $team->setImageId($row->image_id);
-        if (!empty($row->leagues_json)) {
-            $leagues = json_decode($row->leagues_json);
-            foreach ($leagues as $league) {
-                $team->addLeague($league->leagueId, $league->groupText);
-            }
-        }
         return $team;
     }
 }
@@ -102,6 +105,63 @@ class HandballSaisonRepository extends Repository
         $saisons = $this->wpdb->get_results('SELECT DISTINCT saison FROM handball_team ORDER BY saison ASC');
         $map = array_map(function ($saison) { return new Saison($saison->saison); }, $saisons);
         return $map;
+    }
+}
+
+class HandballGroupRepository extends Repository
+{
+    public function saveGroup(Group $group) {
+        $data = [
+            'group_id' => $group->getGroupId(),
+            'group_text' => $group->getGroupText(),
+            'league_id' => $group->getLeagueId(),
+            'league_short' => $group->getLeagueShort(),
+            'league_long' => $group->getLeagueLong(),
+            'ranking' => $group->getRanking(),
+            'fk_team_id' => $group->getTeamId()
+        ];
+        $format = [
+            '%d',
+            '%s',
+            '%d',
+            '%s',
+            '%s',
+            '%s',
+            '%d'
+        ];
+        if ($this->existsGroup($group->getGroupId())) {
+            $this->wpdb->update('handball_group', $data, ['group_id' => $group->getGroupId()], $format, ['%d']);
+        } else {
+            $this->wpdb->insert('handball_group', $data, $format);
+        }
+    }
+
+    public function findGroupsByTeamId($teamId): array
+    {
+        $query = $this->wpdb->prepare('SELECT * FROM handball_group WHERE fk_team_id = %d', $teamId);
+        return $this->findMultiple($query);
+    }
+
+    public function findById($groupId): ?Group
+    {
+        $query = $this->wpdb->prepare('SELECT * FROM handball_group WHERE group_id = %d', $groupId);
+        return $this->findOne($query);
+    }
+
+    protected function mapObject($row): Group
+    {
+        $group = new Group($row->group_id, $row->fk_team_id);
+        $group->setGroupText($row->group_text);
+        $group->setLeagueId($row->league_id);
+        $group->setLeagueLong($row->league_long);
+        $group->setLeagueShort($row->league_short);
+        $group->setRanking($row->ranking);
+        return $group;
+    }
+
+    private function existsGroup($groupId)
+    {
+        return $this->findById($groupId) != null;
     }
 }
 
@@ -162,11 +222,7 @@ class HandballMatchRepository extends Repository
         if ($existingMatch == null) {
             $this->wpdb->insert('handball_match', $data, $format);
         } else {
-            $this->wpdb->update('handball_match', $data, [
-                'game_id' => $match->getGameId()
-            ], $format, [
-                '%d'
-            ]);
+            $this->wpdb->update('handball_match', $data, ['game_id' => $match->getGameId()], $format, ['%d']);
         }
     }
 
@@ -195,7 +251,7 @@ class HandballMatchRepository extends Repository
         return $this->findMultiple($query);
     }
 
-    private function findById($id)
+    public function findById($id): ?Match
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_match WHERE game_id = %d', $id);
         return $this->findOne($query);

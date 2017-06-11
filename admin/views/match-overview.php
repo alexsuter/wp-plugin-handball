@@ -3,7 +3,7 @@ if (! current_user_can('manage_options')) { // TODO Create own capability
     return;
 }
 
-require_once(plugin_dir_path(__FILE__) . '../../includes/class-handball-match-list.php');
+require_once(plugin_dir_path(__FILE__) . '../../admin/class-handball-match-list.php');
 
 $page = $_GET['subpage'] ?? 'recent';
 

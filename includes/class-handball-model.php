@@ -13,26 +13,23 @@ class Team
 
     private $saison;
 
-    private $leagues;
-
     private $matches;
-
-    private $sort;
-
-    private $imageId;
 
     public function __construct($teamId, $teamName, $saison)
     {
         $this->teamId = $teamId;
         $this->teamName = $teamName;
         $this->saison = $saison;
-        $this->leagues = [];
         $this->matches = [];
     }
 
     public function getTeamId()
     {
         return $this->teamId;
+    }
+
+    public function setTeamName($teamName) {
+        $this->teamName = $teamName;
     }
 
     public function getLeagueLong()
@@ -50,23 +47,12 @@ class Team
         return $this->leagueShort;
     }
 
-    public function setImageId($imageId)
-    {
-        $this->imageId = $imageId;
-    }
-
     public function getTeamUrl() {
-        return '/teams/' . $this->getTeamId();
-    }
-
-    public function getImageId()
-    {
-        return $this->imageId;
-    }
-
-    public function hasImage()
-    {
-        return wp_attachment_is_image($this->imageId);
+        $post = $this->findPost();
+        if ($post == null) {
+            return '';
+        }
+        return get_permalink($post);
     }
 
     public function getImageUrl()
@@ -94,16 +80,6 @@ class Team
         return new Saison($this->saison);
     }
 
-    public function addLeague($id, $groupText)
-    {
-        $this->leagues[] = new League($id, $groupText);
-    }
-
-    public function getLeagues()
-    {
-        return $this->leagues;
-    }
-
     public function setMatches($matches)
     {
         $this->matches = $matches;
@@ -116,17 +92,33 @@ class Team
 
     public function getSort()
     {
-        return $this->sort;
+        $post = $this->findPost();
+        if ($post == null) {
+            return;
+        }
+        return get_post_meta($post->ID, 'handball_team_sort', true);
     }
 
-    public function setSort($sort)
-    {
-        $this->sort = $sort;
+    public function findPost() {
+        $postQuery = new WP_Query([
+            'post_type' => 'handball_team',
+            'meta_query' => [
+                [
+                    'key' => 'handball_team_id',
+                    'value' => $this->teamId
+                ]
+            ]
+        ]);
+        if ($postQuery->have_posts()) {
+            $postQuery->the_post();
+            return $postQuery->post;
+        }
+        return null;
     }
 
     public function toString()
     {
-        return 'Team [id=' . $this->teamId . ' name=' . $this->teamName . ' leagues=' . count($this->leagues) . ' matches=' . count($this->matches) . ']';
+        return 'Team [id=' . $this->teamId . ' name=' . $this->teamName . ' matches=' . count($this->matches) . ']';
     }
 }
 
@@ -155,7 +147,16 @@ class Saison
         return substr($this->value, 2, 2) . '/' . substr($this->value, 6, 2);
     }
 
-    public static function getCurrentSaison(): Saison
+    public static function getCurrentSaison(): ?Saison
+    {
+        $currentSaison = get_option('HANDBALL_CURRENT_SAISON');
+        if (empty($currentSaison)) {
+            return null;
+        }
+        return new Saison($currentSaison);
+    }
+
+    public static function getCurrentSaisonBasedOnTime(): Saison
     {
         $saison = '';
         $currentMonth = intval(date('n'));
@@ -171,32 +172,140 @@ class Saison
     }
 }
 
-class League implements JsonSerializable
+class Group
 {
 
-    private $leagueId;
-
+    private $groupId;
     private $groupText;
+    private $leagueId;
+    private $leagueLong;
+    private $leagueShort;
+    private $ranking;
+    private $teamId;
 
-    public function __construct($leagueId, $groupText)
+    public function __construct($groupId, $teamId)
     {
-        $this->leagueId = $leagueId;
-        $this->groupText = $groupText;
+        $this->groupId = $groupId;
+        $this->teamId = $teamId;
     }
 
-    public function getLeagueId()
-    {
-        return $this->leagueId;
+    public function getGroupId() {
+        return $this->groupId;
     }
 
-    public function getGroupText()
-    {
+    public function getGroupText() {
         return $this->groupText;
     }
 
-    public function jsonSerialize()
+    public function setGroupText($groupText) {
+        $this->groupText = $groupText;
+    }
+
+    public function getLeagueId() {
+        return $this->leagueId;
+    }
+
+    public function setLeagueId($leagueId) {
+        $this->leagueId = $leagueId;
+    }
+
+    public function getLeagueLong() {
+        return $this->leagueLong;
+    }
+
+    public function setLeagueLong($leagueLong) {
+        $this->leagueLong= $leagueLong;
+    }
+
+    public function getLeagueShort() {
+        return $this->leagueShort;
+    }
+
+    public function setLeagueShort($leagueShort) {
+        $this->leagueShort= $leagueShort;
+    }
+
+    public function getRankings(): array {
+        if (empty($this->ranking)) {
+            return [];
+        }
+        $rankingArray = json_decode($this->ranking);
+        $rankings = [];
+        foreach ($rankingArray as $rankingObject) {
+            $rankings[] = new Ranking($rankingObject);
+        }
+        return $rankings;
+    }
+
+    public function setRanking($rankingJson)
     {
-        return get_object_vars($this);
+        $this->ranking = $rankingJson;
+    }
+
+    public function getTeamId()
+    {
+        return $this->teamId;
+    }
+
+}
+
+class Ranking
+{
+    private $jsonObject;
+
+    function __construct($jsonObject)
+    {
+        $this->jsonObject = $jsonObject;
+    }
+
+    public function getRank()
+    {
+        return $this->jsonObject->rank;
+    }
+
+    public function getTeamName()
+    {
+        return $this->jsonObject->teamName;
+    }
+
+    public function getTotalPoints()
+    {
+        return $this->jsonObject->totalPoints;
+    }
+
+    public function getTotalWins()
+    {
+        return $this->jsonObject->totalWins;
+    }
+
+    public function getTotalLoss()
+    {
+        return $this->jsonObject->totalLoss;
+    }
+
+    public function getTotalDraws()
+    {
+        return $this->jsonObject->totalDraws;
+    }
+
+    public function getTotalScoresPlus()
+    {
+        return $this->jsonObject->totalScoresPlus;
+    }
+
+    public function getTotalScoresMinus()
+    {
+        return $this->jsonObject->totalScoresMinus;
+    }
+
+    public function getTotalGames()
+    {
+        return $this->jsonObject->totalGames;
+    }
+
+    public function getTotalScoresDiff()
+    {
+        return $this->jsonObject->totalScoresDiff;
     }
 }
 
@@ -258,6 +367,11 @@ class Match
     public function getGameId()
     {
         return $this->gameId;
+    }
+
+    public function setGameNr($gameNr)
+    {
+        $this->gameNr = $gameNr;
     }
 
     public function getGameNr()

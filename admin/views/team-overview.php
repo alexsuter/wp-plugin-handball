@@ -3,7 +3,7 @@ if (! current_user_can('manage_options')) { // TODO Create own capability
     return;
 }
 
-require_once(plugin_dir_path(__FILE__) . '../../includes/class-handball-team-list.php');
+require_once(plugin_dir_path(__FILE__) . '../../admin/class-handball-team-list.php');
 
 $teamList = new HandballTeamList();
 $teamList->prepare_items();
@@ -15,5 +15,5 @@ $teamList->prepare_items();
 </div>
 
 <style type="text/css">
-    .column-saison { width:50px !important; overflow:hidden }
+    .column-sort { width:70px !important; overflow:hidden; text-align:center; }
 </style>

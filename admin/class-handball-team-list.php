@@ -3,8 +3,8 @@ if (! class_exists('WP_List_Table')) {
     require_once (ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-require_once ('class-handball-model.php');
-require_once ('class-handball-repository.php');
+require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-model.php');
+require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-repository.php');
 
 class HandballTeamList extends WP_List_Table
 {
@@ -18,36 +18,27 @@ class HandballTeamList extends WP_List_Table
         parent::__construct($args);
         $this->teamRepo = new HandballTeamRepository();
         $this->saisonRepo = new HandballSaisonRepository();
-        $this->filterSaison = Saison::getCurrentSaison()->getValue();
+
+        $saisons = $this->saisonRepo->findAll();
+        $defaultSaison = 0;
+        foreach ($saisons as $saison) {
+            if ($saison->getValue() > $defaultSaison) {
+                $defaultSaison = $saison->getValue();
+            }
+        }
+
+        $this->filterSaison = $defaultSaison;
         if (isset($_GET['saison_filter'])) {
             $this->filterSaison = $_GET['saison_filter'];
         }
-        ?>
-        <style>
-        .handball-team-sort-field {
-            width:40px;
-        }
-        </style>
-        <script>
-        jQuery(document).ready(function($) {
-        	$('.handball-team-sort-field, .handball-team-image-id-field').change(function(){
-                var value = $(this).val();
-                var teamId = $(this).data('team-id');
-                var attribute = $(this).data('attribute');
-                $.post("/wp-json/handball/teams/" + teamId + "?"+attribute+"=" + value);
-            });
-        });
-        </script>
-        <?php
     }
 
     function get_columns()
     {
         return [
             'sort' => 'Sortierung',
-            'image' => 'Bild',
             'team_name' => 'Team',
-            'leagues' => 'Liga'
+            'actions' => 'Aktionen'
         ];
     }
 
@@ -61,50 +52,43 @@ class HandballTeamList extends WP_List_Table
             $hidden,
             $sortable
         ];
-
-        $this->items = $this->teamRepo->findAll($this->filterSaison);
+        $this->items = $this->teamRepo->findAllBySaison(new Saison($this->filterSaison));
     }
 
     function column_default($item, $column_name)
     {
-        // TODO
-        $imagesQuery = new WP_Query([
-            'post_type' => 'attachment',
-            'post_mime_type' => 'image',
-            'post_status' => 'inherit',
-            // 'posts_per_page' => - 1
-        ]);
-
-        $imageOptions = [
-            '<option value="">Kein Bild</option>'
-        ];
-        foreach ($imagesQuery->posts as $image) {
-            $selected = '';
-            if ($image->ID == $item->getImageId()) {
-                $selected = 'selected';
-            }
-            $imageOptions[] = '<option '.$selected.' value="'.$image->ID.'">'.get_the_title($image->ID).'</option>';
-        }
-
         switch ($column_name) {
             case 'team_id':
                 return $item->getTeamId();
             case 'sort':
-                return '<input data-attribute="sort" data-team-id="'.$item->getTeamId().'" class="handball-team-sort-field" onkeypress="return event.charCode >= 48 && event.charCode <= 57" type="text" value="' . $item->getSort() . '"></input>';
-            case 'image':
-                return '<select data-attribute="imageId" data-team-id="'.$item->getTeamId().'" class="handball-team-image-id-field">'.implode($imageOptions).'</select>';
+                return $item->getSort();
             case 'saison':
                 return $item->getSaison()->formattedShort();
             case 'team_name':
                 $link = $item->getTeamUrl();
-                return '<a href="'.$link.'">' . $item->getTeamName() . ' ' . $item->getLeagueShort() . ' (' . $item->getTeamId() . ')</a><br />' . $item->getLeagueLong();
-            case 'leagues':
-                $output = [];
-                foreach ($item->getLeagues() as $league) {
-                    $output[] = $league->getGroupText();
+                $name = $item->getTeamName() . ' ' . $item->getLeagueShort() . ' (' . $item->getTeamId() . ')';
+                $teamName = '';
+                if (empty($link)) {
+                    $teamName = $name;
+                } else {
+                    $teamName = '<a href="'.$link.'">' . $name . '</a>';
                 }
-                return implode('<br />', $output);
+                return $teamName . '<br />' . $item->getLeagueLong();
+            case 'actions':
+                return $this->createActionLink($item);
         }
+    }
+
+    private function createActionLink(Team $team)
+    {
+        $post = $team->findPost();
+        $url  = '/wp-admin/post-new.php?post_type=handball_team&handball_team_id=' . $team->getTeamId();
+        $text = 'Team-Seite erstellen';
+        if ($post != null) {
+            $url = '/wp-admin/post.php?post='.$post->ID.'&action=edit';
+            $text = 'Team-Seite aktualisieren';
+        }
+        return '<a href="'.$url.'">'. $text .'</a>';
     }
 
     function extra_tablenav($which)

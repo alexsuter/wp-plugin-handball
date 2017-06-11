@@ -13,6 +13,36 @@ class HandballPublicPlugin
         $this->version = $version;
     }
 
+    public function registerPostTypeMatch()
+    {
+        register_post_type('handball_match', [
+            'labels' => [
+                'name' => __('Berichte'),
+                'singular_name' => __('Bericht')
+            ],
+            'public' => true,
+            'has_archive' => true,
+            'rewrite' => [
+                'slug' => 'bericht'
+            ]
+        ]);
+    }
+
+    public function registerPostTypeTeam()
+    {
+        register_post_type('handball_team', [
+            'labels' => [
+                'name' => __('Teams'),
+                'singular_name' => __('Team')
+            ],
+            'public' => true,
+            'has_archive' => true,
+            'rewrite' => [
+                'slug' => 'team'
+            ]
+        ]);
+    }
+
     public function upcomingMatchesWidget()
     {
         require_once ('class-handball-upcoming-matches-widget.php');
@@ -24,6 +54,28 @@ class HandballPublicPlugin
         require_once ('class-handball-played-matches-widget.php');
         register_widget('HandballPlayedMatchesWidget');
     }
+
+    public function addSingleTeamTemplate($singleTemplate)
+    {
+        global $post;
+        $file = PLUGINDIR . '/handball/public/templates/single-' . $post->post_type . '.php';
+        if (file_exists($file)) {
+            return $file;
+        }
+        return $singleTemplate;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function addTeamsToMenu($items, $menu)
     {
@@ -37,8 +89,7 @@ class HandballPublicPlugin
             if ($itemTeamId == null) {
                 return $items;
             }
-            $currentSaison = Saison::getCurrentSaison();
-            $teams = (new HandballTeamRepository())->findAll($currentSaison->getValue());
+            $teams = (new HandballTeamRepository())->findAllBySaison(Saison::getCurrentSaison());
             $order = 10000;
             foreach ($teams as $team) {
                 $title = $team->getTeamName() . ' ' . $team->getLeagueShort();
@@ -68,23 +119,6 @@ class HandballPublicPlugin
         $item->xfn = '';
         $item->status = '';
         return $item;
-    }
-
-    public function teamSite()
-    {
-    }
-
-    public function postTypeMatch()
-    {
-        register_post_type('handball_match', [
-            'labels' => [
-                'name' => __('Berichte'),
-                'singular_name' => __('Bericht')
-            ],
-            'public' => true,
-            'has_archive' => true,
-            'rewrite'     => ['slug' => 'bericht'],
-        ]);
     }
 
 }

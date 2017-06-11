@@ -3,8 +3,8 @@ if (! class_exists('WP_List_Table')) {
     require_once (ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-require_once ('class-handball-model.php');
-require_once ('class-handball-repository.php');
+require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-model.php');
+require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-repository.php');
 
 class HandballMatchList extends WP_List_Table
 {

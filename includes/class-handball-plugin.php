@@ -41,18 +41,20 @@ class HandballPlugin
         $this->loader->add_action('admin_menu', $adminPlugin, 'createAdminMenu');
         $this->loader->add_action('handball_synchronize_data', $adminPlugin, 'synchronize');
         $this->loader->add_action('admin_init', $adminPlugin, 'createSettingsAdmin');
-        $this->loader->add_action('add_meta_boxes', $adminPlugin, 'metaBoxMatch');
-        $this->loader->add_action('save_post', $adminPlugin, 'savePostdata');
-        $this->loader->add_action('rest_api_init', $adminPlugin, 'initRestApis');
+        $this->loader->add_action('add_meta_boxes', $adminPlugin, 'addMetaBoxForPostTypeMatch');
+        $this->loader->add_action('add_meta_boxes', $adminPlugin, 'addMetaBoxForPostTypeTeam');
+        $this->loader->add_action('save_post', $adminPlugin, 'savePostMetaForMatch');
+        $this->loader->add_action('save_post', $adminPlugin, 'savePostMetaForteam');
     }
 
     private function definePublicHocks()
     {
         $publicPlugin = new HandballPublicPlugin($this->getPluginName(), $this->getVersion());
+        $this->loader->add_action('init', $publicPlugin, 'registerPostTypeMatch');
+        $this->loader->add_action('init', $publicPlugin, 'registerPostTypeTeam');
         $this->loader->add_action('widgets_init', $publicPlugin, 'upcomingMatchesWidget');
         $this->loader->add_action('widgets_init', $publicPlugin, 'playedMatchesWidget');
-        $this->loader->add_action('init', $publicPlugin, 'postTypeMatch');
-        $this->loader->add_action('init', $publicPlugin, 'teamSite');
+        $this->loader->add_filter('single_template', $publicPlugin, 'addSingleTeamTemplate');
         $this->loader->add_filter('wp_get_nav_menu_items', $publicPlugin, 'addTeamsToMenu', 20, 2);
 
         // CUSTOM TEAM TEMPLATE!
@@ -72,11 +74,7 @@ class HandballPlugin
         function plugin_template_include_team($template) {
             $queryVar = get_query_var('team');
             if ($queryVar) {
-                if ($queryVar == 'all') {
-                    $template = WP_PLUGIN_DIR . '/handball/public/views/teams.php';
-                } else {
-                    $template = WP_PLUGIN_DIR . '/handball/public/views/team.php';
-                }
+                $template = WP_PLUGIN_DIR . '/handball/public/views/teams.php';
             }
             return $template;
         }

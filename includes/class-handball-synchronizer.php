@@ -17,6 +17,8 @@ class HandballSynchronizer
 
     private $matchRepo;
 
+    private $groupRepo;
+
     public function __construct($apiUrl, $apiUsername, $apiPassword, $clubId)
     {
         $this->apiUrl = $apiUrl;
@@ -25,6 +27,7 @@ class HandballSynchronizer
         $this->clubId = $clubId;
         $this->teamRepo = new HandballTeamRepository();
         $this->matchRepo = new HandballMatchRepository();
+        $this->groupRepo = new HandballGroupRepository();
     }
 
     public function start()
@@ -33,17 +36,11 @@ class HandballSynchronizer
             return;
         }
 
-        $teams = $this->fetchTeams($this->clubId);
+        $teamIds = $this->updateTeams($this->clubId);
 
-        foreach ($teams as $team) {
-            $this->teamRepo->saveTeam($team);
-        }
-
-        foreach ($teams as $team) {
-            $matches = self::fetchMatches($team->getTeamId());
-            foreach ($matches as $match) {
-                $this->matchRepo->saveMatch($match);
-            }
+        foreach ($teamIds as $teamId) {
+            $this->updateMatches($teamId);
+            $this->updateGroup($teamId);
         }
     }
 
@@ -64,33 +61,33 @@ class HandballSynchronizer
         return true;
     }
 
-    private function fetchTeams($clubId)
+    private function updateTeams($clubId)
     {
         $responseTeams = $this->fetchBody($this->apiUrl . '/clubs/' . $clubId . '/teams');
 
-        $teams = [];
+        $teamIds= [];
         foreach ($responseTeams as $responseTeam) {
-            $id = $responseTeam->teamId;
-            if (! isset($teams[$id])) {
-                $existingTeam = $this->teamRepo->findById($id);
-                if ($existingTeam == null) {
-                    $teams[$id] = new Team($id, $responseTeam->teamName, Saison::getCurrentSaison()->getValue());
-                } else {
-                    $teams[$id] = $existingTeam;
-                }
+            $team = $this->teamRepo->findById($responseTeam->teamId);
+            if ($team == null) {
+                $team = new Team($responseTeam->teamId, $responseTeam->teamName, Saison::getCurrentSaisonBasedOnTime()->getValue());
             }
-            $team = $teams[$id];
-            $team->addLeague($responseTeam->leagueId, $responseTeam->groupText);
+            $team->setTeamName($responseTeam->teamName);
 
             $responseDetailTeam = $this->fetchBody($this->apiUrl . '/teams/' . $team->getTeamId());
             $team->setLeagueLong($responseDetailTeam->leagueLong);
             $team->setLeagueShort($responseDetailTeam->leagueShort);
+
+            $this->teamRepo->saveTeam($team);
+
+            if (!isset($teamIds[$responseTeam->teamId])) {
+                $teamIds[] = $responseTeam->teamId;
+            }
         }
 
-        return $teams;
+        return $teamIds;
     }
 
-    private function fetchMatches($teamId)
+    private function updateMatches($teamId)
     {
         // Hack, because API limits always to 30
         $responseMatchesPlanned = $this->fetchBody($this->apiUrl . '/teams/' . $teamId . '/games?status=planned');
@@ -104,9 +101,12 @@ class HandballSynchronizer
             $responseMatches[] = $match;
         }
 
-        $matches = [];
         foreach ($responseMatches as $responseMatch) {
-            $match = new Match($responseMatch->gameId, $responseMatch->gameNr, $teamId);
+            $match = $this->matchRepo->findById($responseMatch->gameId);
+            if ($match == null) {
+                $match = new Match($responseMatch->gameId, $responseMatch->gameNr, $teamId);
+            }
+            $match->setGameNr($responseMatch->gameNr);
             $match->setTeamAName($responseMatch->teamAName);
             $match->setTeamBName($responseMatch->teamBName);
             $match->setGameDateTime($responseMatch->gameDateTime);
@@ -126,9 +126,30 @@ class HandballSynchronizer
             $match->setVenueAddress($responseMatch->venueAddress);
             $match->setVenueCity($responseMatch->venueCity);
             $match->setVenueZip($responseMatch->venueZip);
-            $matches[] = $match;
+
+            $this->matchRepo->saveMatch($match);
         }
-        return $matches;
+    }
+
+    private function updateGroup($teamId)
+    {
+        $responseGroup = $this->fetchBody($this->apiUrl . '/teams/' . $teamId . '/group?status=planned');
+
+        // Handball API Bug
+        if ($responseGroup->groupId == 0) {
+            return;
+        }
+
+        $group = $this->groupRepo->findById($responseGroup->groupId);
+        if ($group == null) {
+            $group = new Group($responseGroup->groupId, $teamId);
+        }
+        $group->setGroupText($responseGroup->groupText);
+        $group->setLeagueId($responseGroup->leagueId);
+        $group->setLeagueShort($responseGroup->leagueShort);
+        $group->setLeagueLong($responseGroup->leagueLong);
+        $group->setRanking(json_encode($responseGroup->ranking));
+        $this->groupRepo->saveGroup($group);
     }
 
     private function fetchBody($url)
