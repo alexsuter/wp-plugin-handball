@@ -124,6 +124,18 @@ class Team
         return null;
     }
 
+    public function getFirstImageUrlInPost()
+    {
+        $post = $this->findPost();
+        if ($post == null) {
+            return '';
+        }
+        ob_start();
+        ob_end_clean();
+        $output = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches);
+        return $matches[1][0];
+    }
+
     public function toString()
     {
         return 'Team [id=' . $this->teamId . ' name=' . $this->teamName . ' matches=' . count($this->matches) . ']';

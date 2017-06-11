@@ -4,7 +4,7 @@
 require_once (plugin_dir_path(__FILE__) . '../../includes/class-handball-repository.php');
 
 $teamRepo = new HandballTeamRepository();
-$teams = $teamRepo->findAllBySaison(Saison::getCurrentSaison());
+$teams = $teamRepo->findAllBySaisonWithPost(Saison::getCurrentSaison());
 ?>
 
 <div class="wrap">
@@ -13,10 +13,10 @@ $teams = $teamRepo->findAllBySaison(Saison::getCurrentSaison());
 		<?php
 		foreach ($teams as $team) {
 		    echo '<p>';
-		    echo '<h4><a href="' . $team->getTeamUrl() . '">' . $team->getTeamName() . ' ' . $team->getLeagueShort() . '</a></h4>';
-		    //if ($team->hasImage()) {
-		      //  echo '<img style="width:250px;" src="' . $team->getImageUrl() . '" />';
-		    //}
+		    echo '<a href="' . $team->getTeamUrl() . '">';
+		    echo '<h4>' . esc_attr($team->getPostTitle()) . '</h4>';
+		    echo '<img src="'.$team->getFirstImageUrlInPost().'" />';
+		    echo '</a>';
 		    echo '</p>';
 		}
 		?>
