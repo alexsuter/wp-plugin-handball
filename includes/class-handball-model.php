@@ -63,11 +63,6 @@ class Team
         return get_permalink($post);
     }
 
-    public function getImageUrl()
-    {
-        return wp_get_attachment_url($this->getImageId());
-    }
-
     public function setLeagueShort($leagueShort)
     {
         $this->leagueShort = $leagueShort;
@@ -140,6 +135,27 @@ class Team
     {
         return 'Team [id=' . $this->teamId . ' name=' . $this->teamName . ' matches=' . count($this->matches) . ']';
     }
+}
+
+class Event
+{
+    private $post;
+
+    public function __construct($post)
+    {
+        $this->post = $post;
+    }
+
+    public function getTitle()
+    {
+        return $this->post->post_title;
+    }
+
+    public function getUrl()
+    {
+        return get_permalink($this->post);
+    }
+
 }
 
 class Saison

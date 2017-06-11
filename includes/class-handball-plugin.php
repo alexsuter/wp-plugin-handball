@@ -61,27 +61,32 @@ class HandballPlugin
         $this->loader->add_filter('wp_get_nav_menu_items', $publicPlugin, 'addTeamsToMenu', 20, 2);
 
         // CUSTOM TEAM TEMPLATE!
-        function plugin_rewrite_rule_team(){
-            add_rewrite_rule('^teams$', 'index.php?team=all', 'top');
-            add_rewrite_rule('^teams/([^/]*)$', 'index.php?team=$matches[1]', 'top');
+        function handball_rewrite_rules(){
+            add_rewrite_rule('^teams$', 'index.php?teams=current', 'top');
+            add_rewrite_rule('^events$', 'index.php?events=upcoming', 'top');
             flush_rewrite_rules(true);
         }
-        add_action('init', 'plugin_rewrite_rule_team');
+        add_action('init', 'handball_rewrite_rules');
 
-        function plugin_query_vars_team($vars) {
-            array_push($vars, 'team');
+        function handball_query_vars($vars) {
+            array_push($vars, 'teams');
+            array_push($vars, 'events');
             return $vars;
         }
-        add_action('query_vars', 'plugin_query_vars_team');
+        add_action('query_vars', 'handball_query_vars');
 
-        function plugin_template_include_team($template) {
-            $queryVar = get_query_var('team');
-            if ($queryVar) {
+        function handball_template_include($template) {
+            $queryVar = get_query_var('teams');
+            if ($queryVar == 'current') {
                 $template = WP_PLUGIN_DIR . '/handball/public/views/teams.php';
+            }
+            $queryVar = get_query_var('events');
+            if ($queryVar == 'upcoming') {
+                $template = WP_PLUGIN_DIR . '/handball/public/views/events.php';
             }
             return $template;
         }
-        add_filter('template_include', 'plugin_template_include_team');
+        add_filter('template_include', 'handball_template_include');
     }
 
     private function getPluginName()
