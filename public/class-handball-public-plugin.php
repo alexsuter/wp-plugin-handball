@@ -65,18 +65,6 @@ class HandballPublicPlugin
         return $singleTemplate;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     public function addTeamsToMenu($items, $menu)
     {
         if ($menu->slug == 'hauptmenue') {
