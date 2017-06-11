@@ -38,6 +38,12 @@ class HandballAdminPlugin
         add_meta_box('handball_metabox_team', 'Handball - Team', 'HandballMetaBoxTeam::render', 'handball_team');
     }
 
+    public function addMetaBoxForPostTypeEvent()
+    {
+        require_once('class-handball-meta-box-event.php');
+        add_meta_box('handball_metabox_event', 'Handball - Event', 'HandballMetaBoxEvent::render', 'handball_event');
+    }
+
     public function savePostMetaForMatch($postId)
     {
         $gameIdKey = 'handball_game_id';
@@ -65,6 +71,18 @@ class HandballAdminPlugin
         $sortKey = 'handball_team_sort';
         if (array_key_exists($sortKey, $_POST)) {
             update_post_meta($postId, $sortKey, $_POST[$sortKey]);
+        }
+    }
+
+    public function savePostMetaForEvent($postId)
+    {
+        $key = 'handball_event_start_datetime';
+        if (array_key_exists($key, $_POST)) {
+            update_post_meta($postId, $key, $_POST[$key]);
+        }
+        $key= 'handball_event_end_datetime';
+        if (array_key_exists($key, $_POST)) {
+            update_post_meta($postId, $key, $_POST[$key]);
         }
     }
 
