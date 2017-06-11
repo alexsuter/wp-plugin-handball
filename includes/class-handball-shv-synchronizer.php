@@ -2,7 +2,7 @@
 require_once ('class-handball-model.php');
 require_once ('class-handball-repository.php');
 
-class HandballSynchronizer
+class HandballShvSynchronizer
 {
 
     private $apiUrl;

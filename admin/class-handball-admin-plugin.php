@@ -15,14 +15,14 @@ class HandballAdminPlugin
 
     public function synchronize()
     {
-        require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-synchronizer.php');
+        require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-shv-synchronizer.php');
 
         $apiUrl = get_option('HANDBALL_API_URL');
         $apiUsername = get_option('HANDBALL_API_USERNAME');
         $apiPassword = get_option('HANDBALL_API_PASSWORD');
         $clubId = get_option('HANDBALL_SYNCHRONIZE_CLUB_ID');
 
-        $synchronizer = new HandballSynchronizer($apiUrl, $apiUsername, $apiPassword, $clubId);
+        $synchronizer = new HandballShvSynchronizer($apiUrl, $apiUsername, $apiPassword, $clubId);
         $synchronizer->start();
     }
 
