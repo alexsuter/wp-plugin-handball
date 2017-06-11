@@ -161,6 +161,16 @@ class Event
         return intval(get_post_meta($this->post->ID, 'handball_event_start_datetime', true));
     }
 
+    public function formattedStartDateLong()
+    {
+        return date('d.m.Y', $this->getStartTimestamp());
+    }
+
+    public function formattedStartDateTimeLong()
+    {
+        return date('d.m.Y H:i', $this->getStartTimestamp());
+    }
+
     public function getTitle()
     {
         return $this->post->post_title;

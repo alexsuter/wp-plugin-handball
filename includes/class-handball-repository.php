@@ -121,24 +121,41 @@ class HandballSaisonRepository extends Repository
 
 class HandballEventRepository
 {
+
     public function findUpComingEvents()
     {
-        $events = [];
-        $postQuery = new WP_Query([
-            'post_type' => 'handball_event'
-        ]);
-        while ($postQuery->have_posts()) {
-            $postQuery->the_post();
-            $event = new Event($postQuery->post);
-            if ($event->isUpComing()) {
-                $events[] = $event;
-            }
-        }
-
+        $events = $this->loadPostsOfTypeEvent(function ($event) {
+            return $event->isUpComing();
+        });
         usort($events, function (Event $a, Event $b) {
             return $a->getStartTimestamp() > $b->getStartTimestamp();
         });
+        return $events;
+    }
 
+    public function findPastEvents()
+    {
+        $events = $this->loadPostsOfTypeEvent(function ($event) {
+            return ! $event->isUpComing();
+        });
+        usort($events, function (Event $a, Event $b) {
+            return $a->getStartTimestamp() < $b->getStartTimestamp();
+        });
+        return $events;
+    }
+
+    private function loadPostsOfTypeEvent($filterCallable) {
+        $postQuery = new WP_Query([
+            'post_type' => 'handball_event'
+        ]);
+        $events = [];
+        while ($postQuery->have_posts()) {
+            $postQuery->the_post();
+            $event = new Event($postQuery->post);
+            if ($filterCallable($event)) {
+                $events[] = $event;
+            }
+        }
         return $events;
     }
 }
