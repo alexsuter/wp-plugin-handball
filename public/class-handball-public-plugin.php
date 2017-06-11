@@ -23,7 +23,7 @@ class HandballPublicPlugin
             'public' => true,
             'has_archive' => true,
             'rewrite' => [
-                'slug' => 'bericht'
+                'slug' => 'berichte'
             ]
         ]);
     }
@@ -38,7 +38,7 @@ class HandballPublicPlugin
             'public' => true,
             'has_archive' => true,
             'rewrite' => [
-                'slug' => 'team'
+                'slug' => 'teams'
             ]
         ]);
     }
@@ -53,7 +53,7 @@ class HandballPublicPlugin
             'public' => true,
             'has_archive' => true,
             'rewrite' => [
-                'slug' => 'event'
+                'slug' => 'events'
             ]
         ]);
     }

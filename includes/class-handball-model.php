@@ -146,6 +146,21 @@ class Event
         $this->post = $post;
     }
 
+    public function isUpComing()
+    {
+        return time() < $this->getEndTimestamp();
+    }
+
+    private function getEndTimestamp()
+    {
+        return intval(get_post_meta($this->post->ID, 'handball_event_end_datetime', true));
+    }
+
+    public function getStartTimestamp()
+    {
+        return intval(get_post_meta($this->post->ID, 'handball_event_start_datetime', true));
+    }
+
     public function getTitle()
     {
         return $this->post->post_title;

@@ -124,20 +124,21 @@ class HandballEventRepository
     public function findUpComingEvents()
     {
         $events = [];
-        // TODO only upcoming
         $postQuery = new WP_Query([
-            'post_type' => 'handball_event',
-            /*'meta_query' => [
-                [
-                    'key' => 'handball_event_start_datetime',
-                    'value' => $this->teamId
-                ]
-            ]*/
+            'post_type' => 'handball_event'
         ]);
         while ($postQuery->have_posts()) {
             $postQuery->the_post();
-            $events[] = new Event($postQuery->post);
+            $event = new Event($postQuery->post);
+            if ($event->isUpComing()) {
+                $events[] = $event;
+            }
         }
+
+        usort($events, function (Event $a, Event $b) {
+            return $a->getStartTimestamp() > $b->getStartTimestamp();
+        });
+
         return $events;
     }
 }
