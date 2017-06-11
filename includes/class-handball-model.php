@@ -47,6 +47,14 @@ class Team
         return $this->leagueShort;
     }
 
+    public function getPostTitle() {
+        $post = $this->findPost();
+        if ($post == null) {
+            return '';
+        }
+        return $post->post_title;
+    }
+
     public function getTeamUrl() {
         $post = $this->findPost();
         if ($post == null) {

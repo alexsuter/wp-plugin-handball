@@ -68,6 +68,17 @@ class HandballTeamRepository extends Repository
         return $this->findMultiple($query);
     }
 
+    public function findAllBySaisonWithPost(?Saison $saison): array {
+        $teams = $this->findAllBySaison($saison);
+        $t = [];
+        foreach ($teams as $team) {
+            if ($team->findPost() != null) {
+                $t[] = $team;
+            }
+        }
+        return $t;
+    }
+
     public function findAllBySaison(?Saison $saison): array
     {
         if ($saison == null) {

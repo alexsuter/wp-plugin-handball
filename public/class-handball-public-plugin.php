@@ -89,11 +89,11 @@ class HandballPublicPlugin
             if ($itemTeamId == null) {
                 return $items;
             }
-            $teams = (new HandballTeamRepository())->findAllBySaison(Saison::getCurrentSaison());
+            $teams = (new HandballTeamRepository())->findAllBySaisonWithPost(Saison::getCurrentSaison());
             $order = 10000;
             foreach ($teams as $team) {
-                $title = $team->getTeamName() . ' ' . $team->getLeagueShort();
-                $url = '/teams/' . $team->getTeamId();
+                $title = esc_attr($team->getPostTitle());
+                $url = $team->getTeamUrl();
                 $items[] = self::createCustomNavMenuItem($title, $url, ++ $order, $itemTeamId);
             }
         }
