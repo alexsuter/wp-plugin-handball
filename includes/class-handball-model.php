@@ -483,6 +483,11 @@ class Match
         return mysql2date('d.m.y H:i', $this->getGameDateTime());
     }
 
+    public function isPlayed() {
+        $timestamp = strtotime($this->getGameDateTime());
+        return $timestamp < time();
+    }
+
     public function setGameTypeLong($gameTypeLong)
     {
         $this->gameTypeLong = $gameTypeLong;
