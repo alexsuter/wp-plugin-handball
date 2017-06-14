@@ -58,6 +58,21 @@ class HandballPublicPlugin
         ]);
     }
 
+    public function registerPostTypeGallery()
+    {
+        register_post_type('handball_gallery', [
+            'labels' => [
+                'name' => __('Galerien'),
+                'singular_name' => __('Galerie')
+            ],
+            'public' => true,
+            'has_archive' => true,
+            'rewrite' => [
+                'slug' => 'galerie'
+            ]
+        ]);
+    }
+
     public function upcomingMatchesWidget()
     {
         require_once ('class-handball-upcoming-matches-widget.php');

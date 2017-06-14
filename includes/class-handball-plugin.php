@@ -44,9 +44,11 @@ class HandballPlugin
         $this->loader->add_action('add_meta_boxes', $adminPlugin, 'addMetaBoxForPostTypeMatch');
         $this->loader->add_action('add_meta_boxes', $adminPlugin, 'addMetaBoxForPostTypeTeam');
         $this->loader->add_action('add_meta_boxes', $adminPlugin, 'addMetaBoxForPostTypeEvent');
+        $this->loader->add_action('add_meta_boxes', $adminPlugin, 'addMetaBoxForPostTypeGallery');
         $this->loader->add_action('save_post', $adminPlugin, 'savePostMetaForMatch');
         $this->loader->add_action('save_post', $adminPlugin, 'savePostMetaForTeam');
         $this->loader->add_action('save_post', $adminPlugin, 'savePostMetaForEvent');
+        $this->loader->add_action('save_post', $adminPlugin, 'savePostMetaForGallery');
     }
 
     private function definePublicHocks()
@@ -55,6 +57,7 @@ class HandballPlugin
         $this->loader->add_action('init', $publicPlugin, 'registerPostTypeMatch');
         $this->loader->add_action('init', $publicPlugin, 'registerPostTypeTeam');
         $this->loader->add_action('init', $publicPlugin, 'registerPostTypeEvent');
+        $this->loader->add_action('init', $publicPlugin, 'registerPostTypeGallery');
         $this->loader->add_action('widgets_init', $publicPlugin, 'upcomingMatchesWidget');
         $this->loader->add_action('widgets_init', $publicPlugin, 'playedMatchesWidget');
         $this->loader->add_filter('single_template', $publicPlugin, 'addSingleTeamTemplate');

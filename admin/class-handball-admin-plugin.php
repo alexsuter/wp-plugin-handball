@@ -29,19 +29,25 @@ class HandballAdminPlugin
     public function addMetaBoxForPostTypeMatch()
     {
         require_once('class-handball-meta-box-match.php');
-        add_meta_box('handball_metabox_match', 'Handball - Match', 'HandballMetaBoxMatch::render', 'handball_match');
+        add_meta_box('handball_metabox_match', 'Match', 'HandballMetaBoxMatch::render', 'handball_match');
     }
 
     public function addMetaBoxForPostTypeTeam()
     {
         require_once('class-handball-meta-box-team.php');
-        add_meta_box('handball_metabox_team', 'Handball - Team', 'HandballMetaBoxTeam::render', 'handball_team');
+        add_meta_box('handball_metabox_team', 'Team', 'HandballMetaBoxTeam::render', 'handball_team');
     }
 
     public function addMetaBoxForPostTypeEvent()
     {
         require_once('class-handball-meta-box-event.php');
-        add_meta_box('handball_metabox_event', 'Handball - Event', 'HandballMetaBoxEvent::render', 'handball_event');
+        add_meta_box('handball_metabox_event', 'Event', 'HandballMetaBoxEvent::render', 'handball_event');
+    }
+
+    public function addMetaBoxForPostTypeGallery()
+    {
+        require_once('class-handball-meta-box-gallery.php');
+        add_meta_box('handball_metabox_event', 'Galerie', 'HandballMetaBoxGallery::render', 'handball_gallery');
     }
 
     public function savePostMetaForMatch($postId)
@@ -88,6 +94,14 @@ class HandballAdminPlugin
             update_post_meta($postId, $key, $_POST[$key]);
         }
         $key= 'handball_event_end_datetime';
+        if (array_key_exists($key, $_POST)) {
+            update_post_meta($postId, $key, $_POST[$key]);
+        }
+    }
+
+    public function savePostMetaForGallery($postId)
+    {
+        $key = 'handball_gallery_date';
         if (array_key_exists($key, $_POST)) {
             update_post_meta($postId, $key, $_POST[$key]);
         }

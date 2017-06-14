@@ -1,34 +1,23 @@
 <?php
-class HandballMetaBoxEvent
+class HandballMetaBoxGallery
 {
     public static function render($post)
     {
-        $startDateTime = get_post_meta($post->ID, 'handball_event_start_datetime', true);
-        if (empty($startDateTime) && isset($_GET['handball_event_start_datetime'])) {
-            $startDateTime= $_GET['handball_event_start_datetime'];
-        }
+        $date = get_post_meta($post->ID, 'handball_gallery_date', true);
 
-        $endDateTime = get_post_meta($post->ID, 'handball_event_end_datetime', true);
-        if (empty($endDateTime) && isset($_GET['handball_event_end_datetime'])) {
-            $endDateTime= $_GET['handball_event_end_datetime'];
-        }
-
-        self::renderDateTime('Start', 'handball_event_start_datetime', $startDateTime);
-        echo '<br />';
-        self::renderDateTime('Ende', 'handball_event_end_datetime', $endDateTime);
+        self::renderDate('Datum', 'handball_gallery_date', $date);
 
         ?>
         <script>
-			function handballDateTimeChanged(key) {
+			function handballDateChanged(key) {
 				var day = handballValueFromSelect(key + "_day");
 				var month = handballValueFromSelect(key + "_month") - 1;
 				var year = handballValueFromSelect(key + "_year");
-				var hours = handballValueFromSelect(key + "_hour");
-				var minutes = handballValueFromSelect(key + "_minute");
+				var hours = 6;
+				var minutes = 0;
 				var seconds = 0;
 				var milliseconds = 0;
 				var date = new Date(year, month, day, hours, minutes, seconds, milliseconds);
-				date.setUTCHours(hours);
 				var timestamp = date.getTime() / 1000;
 				document.getElementById(key).value = timestamp;
 			}
@@ -41,7 +30,7 @@ class HandballMetaBoxEvent
         <?php
     }
 
-    private static function renderDateTime($name, $key, $value)
+    private static function renderDate($name, $key, $value)
     {
         if (empty($value)) {
             $value = time();
@@ -49,9 +38,6 @@ class HandballMetaBoxEvent
         $day = date('j', $value);
         $month = date('n', $value);
         $year = date('Y', $value);
-
-        $hour = date('G', $value);
-        $minute = intval(date('i', $value));
         ?>
         <label for="<?= $key?>"><?= $name ?></label>
         <br />
@@ -63,11 +49,6 @@ class HandballMetaBoxEvent
 		self::renderMonth($key, $month);
 		echo '.';
 		self::renderYear($key, $year);
-		echo '&ensp;&ensp;';
-		self::renderHour($key, $hour);
-		echo ':';
-		self::renderMinute($key, $minute);
-		echo 'Uhr';
     }
 
     private static function renderDay($key, $value) {
@@ -82,21 +63,13 @@ class HandballMetaBoxEvent
         self::renderSelect(2000, 2050, $key, 'year', $value, 60);
     }
 
-    private static function renderHour($key, $value) {
-        self::renderSelect(0, 23, $key, 'hour', $value, 45);
-    }
-
-    private static function renderMinute($key, $value) {
-        self::renderSelect(0, 59, $key, 'minute', $value, 45);
-    }
-
     private static function renderSelect($from, $to, $key, $subkey, $value, $px) {
         $options = [];
         for ($i = $from; $i <= $to; $i++) {
             $options[] = self::createOption($i, $value);
         }
         ?>
-        <select onchange="handballDateTimeChanged('<?= $key ?>')" style="width:<?= $px ?>px;" id="<?= $key . '_' . $subkey ?>" >
+        <select onchange="handballDateChanged('<?= $key ?>')" style="width:<?= $px ?>px;" id="<?= $key . '_' . $subkey ?>" >
         	<?= implode('', $options) ?>
         </select>
 		<?php

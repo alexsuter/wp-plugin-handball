@@ -15,24 +15,13 @@ $pastEvents = $repo->findPastEvents();
 		<h1>Kommende Events</h1>
 		<?php
 		foreach ($upComingEvents as $event) {
-		    echo '<p>';
-		    echo $event->formattedStartDateLong();
-		    echo ' <a href="' . $event->getUrl() . '">';
-		    echo esc_attr($event->getTitle());
-		    echo '</a>';
-		    echo '</p>';
+		    include(WP_PLUGIN_DIR . '/handball/public/templates/_event-item.php');
 		}
 		?>
-
 		<h1>Vergangene Events</h1>
 		<?php
 		foreach ($pastEvents as $event) {
-		    echo '<p>';
-		    echo $event->formattedStartDateLong();
-		    echo '<a href="' . $event->getUrl() . '">';
-		    echo ' ' . esc_attr($event->getTitle());
-		    echo '</a>';
-		    echo '</p>';
+		    include(WP_PLUGIN_DIR . '/handball/public/templates/_event-item.php');
 		}
 		?>
 		</main>

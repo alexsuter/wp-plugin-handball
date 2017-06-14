@@ -135,13 +135,7 @@ class Team
     public function getFirstImageUrlInPost()
     {
         $post = $this->findPost();
-        if ($post == null) {
-            return '';
-        }
-        ob_start();
-        ob_end_clean();
-        $output = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches);
-        return $matches[1][0];
+        return WpPostHelper::getFirstImageUrlInPost($post);
     }
 
     public function toString()
@@ -172,6 +166,16 @@ class Event
     public function getStartTimestamp()
     {
         return intval(get_post_meta($this->post->ID, 'handball_event_start_datetime', true));
+    }
+
+    public function getExcerpt()
+    {
+        return wp_kses_post(wp_trim_words($this->post->post_content, 50));
+    }
+
+    public function getFirstImageUrlInPost()
+    {
+        return WpPostHelper::getFirstImageUrlInPost($this->post);
     }
 
     public function formattedStartDateLong()
@@ -721,4 +725,19 @@ class Match
     {
         return 'Match [id=' . $this->gameId . ' teamAName=' . $this->teamAName . ' teamBName=' . $this->teamBName . ']';
     }
+}
+
+class WpPostHelper {
+
+    public static function getFirstImageUrlInPost($post)
+    {
+        if ($post == null) {
+            return '';
+        }
+        ob_start();
+        ob_end_clean();
+        $output = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches);
+        return $matches[1][0];
+    }
+
 }

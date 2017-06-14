@@ -40,11 +40,4 @@ get_header(); ?>
 #primary {
     width: 100% !important;
 }
-.responsive-table-container
-{
-	width: 100%;
-	overflow-y: auto;
-	_overflow: auto;
-	margin: 0 0 1em;
-}
 </style>
