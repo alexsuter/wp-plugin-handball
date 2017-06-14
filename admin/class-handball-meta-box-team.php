@@ -10,9 +10,11 @@ class HandballMetaBoxTeam
             $teamId= $_GET['handball_team_id'];
         }
 
+        $shortName = get_post_meta($post->ID, 'handball_team_short_name', true);
+
         $sort = get_post_meta($post->ID, 'handball_team_sort', true);
-        if (empty($sort) && isset($_GET['handball_team_sort'])) {
-            $sort= $_GET['handball_team_sort'];
+        if (empty($sort)) {
+            $sort = 0;
         }
         ?>
 
@@ -24,17 +26,23 @@ class HandballMetaBoxTeam
             foreach ($teamRepo->findAll() as $team) {
                 $selected = selected($teamId, $team->getTeamId(), false);
                 $value = $team->getTeamId();
-                $display = $team->getTeamName();
-                echo '<option '.$selected.' value="'.$value.'">'.$display.'</option>';
+                $display = $team->getSaison()->formattedShort() . ' ' . $team->getTeamName() . ' ' . $team->getLeagueLong();
+                echo '<option '.$selected.' value="'.esc_attr($value).'">'.esc_attr($display).'</option>';
             }
         ?>
         </select>
+
+		<br />
+
+		<label for="handball_team_short_name">Kurzname</label>
+        <br />
+        <input name="handball_team_short_name" id="handball_team_short_name" class="postbox" type="text" value="<?= esc_attr($shortName) ?>"></input>
 
         <br />
 
         <label for="handball_team_sort">Sortierungsnummer</label>
         <br />
-        <input name="handball_team_sort" id="handball_team_sort" class="postbox" type="text" value="<?= $sort ?>"></input>
+        <input name="handball_team_sort" id="handball_team_sort" class="postbox" type="text" value="<?= esc_attr($sort) ?>"></input>
         <?php
     }
 }

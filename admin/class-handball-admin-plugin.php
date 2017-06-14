@@ -68,9 +68,16 @@ class HandballAdminPlugin
                 update_post_meta($postId, $teamIdKey, $id);
             }
         }
+        $shortNameKey = 'handball_team_short_name';
+        if (array_key_exists($shortNameKey, $_POST)) {
+            update_post_meta($postId, $shortNameKey, $_POST[$shortNameKey]);
+        }
         $sortKey = 'handball_team_sort';
         if (array_key_exists($sortKey, $_POST)) {
-            update_post_meta($postId, $sortKey, $_POST[$sortKey]);
+            $sort = $_POST[$sortKey];
+            if (intval($sort)) {
+                update_post_meta($postId, $sortKey, $sort);
+            }
         }
     }
 

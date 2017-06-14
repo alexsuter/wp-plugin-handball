@@ -95,7 +95,7 @@ class HandballPublicPlugin
             $teams = (new HandballTeamRepository())->findAllBySaisonWithPost(Saison::getCurrentSaison());
             $order = 10000;
             foreach ($teams as $team) {
-                $title = esc_attr($team->getPostTitle());
+                $title = esc_attr($team->getShortName());
                 $url = $team->getTeamUrl();
                 $items[] = self::createCustomNavMenuItem($title, $url, ++ $order, $itemTeamId);
             }

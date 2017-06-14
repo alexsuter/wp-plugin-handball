@@ -2,6 +2,7 @@
 
 class Team
 {
+    private $_post;
 
     private $teamId;
 
@@ -102,7 +103,18 @@ class Team
         return get_post_meta($post->ID, 'handball_team_sort', true);
     }
 
+    public function getShortName() {
+        $post = $this->findPost();
+        if ($post == null) {
+            return;
+        }
+        return get_post_meta($post->ID, 'handball_team_short_name', true);
+    }
+
     public function findPost() {
+        if ($this->_post != null) {
+            return $this->_post;
+        }
         $postQuery = new WP_Query([
             'post_type' => 'handball_team',
             'meta_query' => [
@@ -114,7 +126,8 @@ class Team
         ]);
         if ($postQuery->have_posts()) {
             $postQuery->the_post();
-            return $postQuery->post;
+            $this->_post = $postQuery->post;
+            return $this->_post;
         }
         return null;
     }
