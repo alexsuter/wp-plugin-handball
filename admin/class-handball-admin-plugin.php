@@ -91,11 +91,19 @@ class HandballAdminPlugin
     {
         $key = 'handball_event_start_datetime';
         if (array_key_exists($key, $_POST)) {
-            update_post_meta($postId, $key, $_POST[$key]);
+            $dateTime = $_POST[$key];
+            if (self::isDateTimeString($dateTime)) {
+                $dateTime= self::dateTimeStringToTimestamp($dateTime);
+            }
+            update_post_meta($postId, $key, $dateTime);
         }
         $key= 'handball_event_end_datetime';
         if (array_key_exists($key, $_POST)) {
-            update_post_meta($postId, $key, $_POST[$key]);
+            $dateTime = $_POST[$key];
+            if (self::isDateTimeString($dateTime)) {
+                $dateTime = self::dateTimeStringToTimestamp($dateTime);
+            }
+            update_post_meta($postId, $key, $dateTime);
         }
     }
 
@@ -103,8 +111,29 @@ class HandballAdminPlugin
     {
         $key = 'handball_gallery_date';
         if (array_key_exists($key, $_POST)) {
-            update_post_meta($postId, $key, $_POST[$key]);
+            $date = $_POST[$key];
+            if (self::isDateTimeString($date)) {
+                $date = self::dateStringToTimestamp($date);
+            }
+            update_post_meta($postId, $key, $date);
         }
+    }
+
+    private static function isDateTimeString($string)
+    {
+        return strpos($string, '-') !== false;
+    }
+
+    private static function dateTimeStringToTimestamp($dateTimeString)
+    {
+        $arr = explode('-', $dateTimeString);
+        return mktime($arr[3], $arr[4], 0, $arr[1], $arr[0], $arr[2]);
+    }
+
+    private static function dateStringToTimestamp($dateString)
+    {
+        $arr = explode('-', $dateString);
+        return mktime(0, 0, 0, $arr[1], $arr[0], $arr[2]);
     }
 
     public function createSettingsAdmin() {
