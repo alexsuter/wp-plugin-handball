@@ -111,7 +111,7 @@ get_header(); ?>
 	margin: 0 0 1em;
 }
 .td-ranking {
-                         text-align:center;
-                         width: 50px;
-                    }
+    text-align:center;
+    width: 50px;
+}
 </style>

@@ -170,7 +170,7 @@ class Event
 
     public function getExcerpt()
     {
-        return wp_kses_post(wp_trim_words($this->post->post_content, 50));
+        return wp_kses_post(wp_trim_words($this->post->post_content, 25));
     }
 
     public function getFirstImageUrlInPost()
@@ -186,6 +186,11 @@ class Event
     public function formattedStartDateTimeLong()
     {
         return date('d.m.Y H:i', $this->getStartTimestamp());
+    }
+
+    public function formattedEndDateTimeLong()
+    {
+        return date('d.m.Y H:i', $this->getEndTimestamp());
     }
 
     public function getTitle()

@@ -12,18 +12,23 @@ $pastEvents = $repo->findPastEvents();
 <div class="wrap">
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
-		<h1>Kommende Events</h1>
-		<?php
-		foreach ($upComingEvents as $event) {
-		    include(WP_PLUGIN_DIR . '/handball/public/templates/_event-item.php');
-		}
-		?>
-		<h1>Vergangene Events</h1>
-		<?php
-		foreach ($pastEvents as $event) {
-		    include(WP_PLUGIN_DIR . '/handball/public/templates/_event-item.php');
-		}
-		?>
+    		<h1 class="entry-title">Kommende Events</h1>
+    		<div class="entry-content clearfix" style="margin-bottom: 20px;">
+    		<?php
+    		foreach ($upComingEvents as $event) {
+    		    include(WP_PLUGIN_DIR . '/handball/public/templates/_event-item.php');
+    		}
+    		?>
+    		</div>
+
+    		<h1 class="entry-title">Vergangene Events</h1>
+    		<div class="entry-content clearfix">
+    		<?php
+    		foreach ($pastEvents as $event) {
+    		    include(WP_PLUGIN_DIR . '/handball/public/templates/_event-item.php');
+    		}
+    		?>
+    		</div>
 		</main>
 	</div>
 </div>

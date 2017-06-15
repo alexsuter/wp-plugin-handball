@@ -10,8 +10,8 @@ $teams = $teamRepo->findAllBySaisonWithPost(Saison::getCurrentSaison());
 <div class="wrap">
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
+  		<h1 class="entry-title">Teams</h1>
 		<div class="entry-content clearfix">
-    		<h1>Teams</h1>
     		<?php
     		$classFirst = "content-column one_half";
     		$classLast = "content-column one_half last_column";
