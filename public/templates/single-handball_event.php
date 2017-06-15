@@ -28,7 +28,6 @@
         		    esc_attr( get_the_date( 'c' ) ),
         		    esc_html( get_the_date() )
         		);
-        		// pointer-events: none;
         		echo '<div class="entry-meta"><span class="meta-date">' . $time_string . '</span>';
         		echo '<span class="meta-author"><span class="author vcard" rel="author">' . esc_html( get_the_author()) . '</span></span></div>'
        		    ?>

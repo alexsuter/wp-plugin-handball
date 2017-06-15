@@ -11,6 +11,16 @@ get_header(); ?>
         	</header>
 
         	<?php
+        		$time_string = sprintf( '<span title="%1$s" rel="bookmark"><time class="entry-date published updated" datetime="%2$s">%3$s</time></span>',
+        		    esc_attr( get_the_time() ),
+        		    esc_attr( get_the_date( 'c' ) ),
+        		    esc_html( get_the_date() )
+        		);
+        		echo '<div class="entry-meta"><span class="meta-date">' . $time_string . '</span>';
+        		echo '<span class="meta-author"><span class="author vcard" rel="author">' . esc_html( get_the_author()) . '</span></span></div>'
+       		    ?>
+
+        	<?php
     			global $post;
     			require_once (plugin_dir_path(__FILE__) . '../../includes/class-handball-repository.php');
     			$matchRepo = new HandballMatchRepository();
@@ -31,13 +41,6 @@ get_header(); ?>
 		</main>
 	</section>
 
-	<?php // get_sidebar(); ?>
+	<?php get_sidebar(); ?>
 
 <?php get_footer(); ?>
-
-
-<style>
-#primary {
-    width: 100% !important;
-}
-</style>

@@ -15,9 +15,6 @@ get_header(); ?>
         </article>
         <?php
 
-
-
-
 			global $post;
 
 			require_once (plugin_dir_path(__FILE__) . '../../includes/class-handball-repository.php');
@@ -94,15 +91,12 @@ get_header(); ?>
 		</main>
 	</section>
 
-	<?php // get_sidebar(); ?>
+	<?php  get_sidebar(); ?>
 
 <?php get_footer(); ?>
 
 
 <style>
-#primary {
-    width: 100% !important;
-}
 .responsive-table-container
 {
 	width: 100%;
