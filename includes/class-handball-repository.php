@@ -133,6 +133,15 @@ class HandballEventRepository
         return $events;
     }
 
+    public function findNextEvent(): ?Event
+    {
+        $events = $this->findUpComingEvents();
+        if (isset($events[0])) {
+            return $events[0];
+        }
+        return null;
+    }
+
     public function findPastEvents()
     {
         $events = $this->loadPostsOfTypeEvent(function ($event) {
@@ -157,6 +166,48 @@ class HandballEventRepository
             }
         }
         return $events;
+    }
+}
+
+class HandballGalleryRepository
+{
+    public function findNewest(): ?Gallery
+    {
+        $postQuery = new WP_Query([
+            'post_type' => 'handball_gallery',
+            'post_status' => 'publish',
+            'orderby' => 'publish_date',
+            'order' => 'DESC',
+        ]);
+
+        while ($postQuery->have_posts()) {
+            $postQuery->the_post();
+            return new Gallery($postQuery->post);
+        }
+        return null;
+    }
+
+    public function findAll()
+    {
+        $galleries = $this->loadPostsOfTypeGallery();
+        usort($galleries, function (Gallery $a, Gallery $b) {
+            return $a->getDateTimestamp() < $b->getDateTimestamp();
+        });
+        return $galleries;
+    }
+
+    private function loadPostsOfTypeGallery()
+    {
+        $postQuery = new WP_Query([
+            'post_type' => 'handball_gallery',
+            'post_status' => 'publish'
+        ]);
+        $galleries= [];
+        while ($postQuery->have_posts()) {
+            $postQuery->the_post();
+            $galleries[] = new Gallery($postQuery->post);
+        }
+        return $galleries;
     }
 }
 

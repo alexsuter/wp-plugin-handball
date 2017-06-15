@@ -144,6 +144,41 @@ class Team
     }
 }
 
+class Gallery
+{
+    private $post;
+
+    public function __construct($post)
+    {
+        $this->post = $post;
+    }
+
+    public function getDateTimestamp()
+    {
+        return intval(get_post_meta($this->post->ID, 'handball_gallery_date', true));
+    }
+
+    public function getFirstImageUrlInPost()
+    {
+        return WpPostHelper::getFirstImageUrlInPost($this->post);
+    }
+
+    public function getTitle()
+    {
+        return $this->post->post_title;
+    }
+
+    public function getUrl()
+    {
+        return get_permalink($this->post);
+    }
+
+    public function formattedStartDateLong()
+    {
+        return date('d.m.Y', $this->getDateTimestamp());
+    }
+}
+
 class Event
 {
     private $post;

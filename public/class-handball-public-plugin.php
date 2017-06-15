@@ -85,6 +85,18 @@ class HandballPublicPlugin
         register_widget('HandballPlayedMatchesWidget');
     }
 
+    public function nextEventWidget()
+    {
+        require_once ('class-handball-next-event-widget.php');
+        register_widget('HandballNextEventWidget');
+    }
+
+    public function newestGalleryWidget()
+    {
+        require_once ('class-handball-newest-gallery-widget.php');
+        register_widget('HandballNewestGalleryWidget');
+    }
+
     public function addSingleTeamTemplate($singleTemplate)
     {
         global $post;
