@@ -14,6 +14,10 @@ get_header();
 			    'post_type' => ['handball_match', 'post'],
 			    'order_by' => 'meta_value',
 			    'post_status' => 'publish',
+			    
+			    'meta_key' => 'handball_is_news',
+			    'meta_value' => 1,
+			    
 			    'orderby' => 'publish_date',
 			    'order' => 'DESC',
 			    'posts_per_page' => 6
