@@ -29,7 +29,10 @@ get_header(); ?>
 
     			$match = $matchRepo->findById($matchId);
     			$showScore = $gameReportType == 'report';
-    			$showLinks = false;
+    			$showPreviewLink = false;
+    			$showReportLink= false;
+    			$showLeague = true;
+    			$showEncounterWithLeague = false;
     			include '_match-detail.php';
 
     			the_content();

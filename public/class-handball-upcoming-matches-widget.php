@@ -17,7 +17,7 @@ class HandballUpcomingMatchesWidget extends WP_Widget
 
         $outputs = [];
         foreach ($matches as $match) {
-            $output = mysql2date('d.m.Y h:i', $match->getGameDateTime());
+            $output = $match->getGameDateTimeFormattedLong();
             $output .= ' Uhr <br />';
             $output .= $match->getVenue();
             $output .= '<br />';

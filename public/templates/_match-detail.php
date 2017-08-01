@@ -1,7 +1,10 @@
 <?php
 // $match:Match
 // $showScore:boolean
-// $showLinks:boolean
+// $showPreviewLink:boolean
+// $showReportLink:boolean
+// $showLeague:boolean
+// $showEncounterWithLeague:boolean
 ?>
 
 <div class="entry-content clearfix" style="text-align:center;border-bottom:0px solid #eee;padding-top:15px;padding-bottom:15px; ">
@@ -9,27 +12,52 @@
 
 	<br />
 
-	<span style="font-size:20px;"><?= $match->getEncounter() ?></span>
+	<?php
+	   if ($showLeague) {
+	       echo $match->getLeagueLong();
+	       echo '<br />';
+	   }
+	?>
 
-	<?php if ($showScore) { ?>
-		<br />
-		<?= $match->getScore() ?>
-	<?php } ?>
+	<span style="font-size:20px;">
+		<?php
+		if ($showEncounterWithLeague) {
+		    echo $match->getEncounterWithLeague();
+		} else {
+		    echo $match->getEncounter();
+		}
+		?>
+	</span>
 
 	<?php
-    if ($showLinks) {
+	if ($showScore) {
+        echo '<br />';
+        echo $match->getScore();
+    }
+
+	 if ($showPreviewLink || $showReportLink) {
+
         $previewUrl = $match->getPostPreviewUrl();
-        if ($previewUrl != null) {
-            echo '<br /><a href="' . $previewUrl . '">Vorschau</a>';
-        }
         $reportUrl = $match->getPostReportUrl();
-        if ($reportUrl != null) {
-            if ($previewUrl == null) {
-                echo '<br />';
-            } else {
-                echo ' | ';
+
+        if (!empty($previewUrl) || !empty($reportUrl)) {
+            echo '<br />';
+        }
+
+        if ($showPreviewLink) {
+            if (!empty($previewUrl)) {
+                echo '<a href="' . $previewUrl . '">Vorschau</a>';
             }
-            echo '<a href="' . $reportUrl . '">Bericht</a>';
+        }
+
+        if ($showPreviewLink && $showReportLink && !empty($previewUrl) && !empty($reportUrl)) {
+            echo ' | ';
+        }
+
+        if ($showReportLink) {
+            if (!empty($reportUrl)) {
+                echo '<a href="' . $reportUrl. '">Bericht</a>';
+            }
         }
     }
     ?>

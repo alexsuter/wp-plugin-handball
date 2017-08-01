@@ -22,6 +22,7 @@ $galleries = $repo->findAll();
     		    } else {
     		        echo "<div class='$classSecond' style='padding-right:25px;'>";
     		    }
+    		    $i++;
 
     		    echo '<h2>' . esc_attr($gallery->getTitle()) . ' <span style="color:#aaa;font-size:12px;">'.$gallery->formattedStartDateLong().'</span></h2>';
 

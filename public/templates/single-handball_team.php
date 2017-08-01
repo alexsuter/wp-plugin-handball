@@ -30,10 +30,12 @@ get_header(); ?>
 
 			foreach ($matches as $match) {
     			$showScore = $match->isPlayed();
-    			$showLinks = true;
+    			$showPreviewLink = true;
+    			$showReportLink= true;
+    			$showLeague = false;
+    			$showEncounterWithLeague = false;
     			include '_match-detail.php';
 			}
-
 
 			endwhile; ?>
 

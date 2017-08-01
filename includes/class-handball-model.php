@@ -354,6 +354,11 @@ class Group
         }
         return $rankings;
     }
+    
+    public function getRanking()
+    {
+        return $this->ranking;
+    }
 
     public function setRanking($rankingJson)
     {
@@ -707,6 +712,23 @@ class Match
 
     public function getEncounter() {
         return $this->getTeamAName() . ' - ' . $this->getTeamBName();
+    }
+
+    public function getEncounterWithLeague(): string {
+        if ($this->isTeamAOurTeam()) {
+            return $this->getLeagueShort() . ' - ' . $this->getTeamBName();
+        }
+        return $this->getTeamAName() . ' - ' . $this->getLeagueShort();
+    }
+
+    private function isTeamAOurTeam(): bool {
+        return
+            self::stringContains(strtolower($this->getTeamAName()), 'goldau') ||
+            self::stringContains(strtolower($this->getTeamAName()), 'shooters');
+    }
+
+    private static function stringContains($string, $contains) {
+        return (strpos($string, $contains) !== false);
     }
 
     public function getScore() {

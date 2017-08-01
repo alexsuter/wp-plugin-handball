@@ -82,6 +82,14 @@ class HandballPlugin
         }
         add_action('query_vars', 'handball_query_vars');
 
+        function handbalEndsWith($string, $search) {
+            $length = strlen($search);
+            if ($length == 0) {
+                return true;
+            }
+            return (substr($string, - $length) === $search);
+        }
+
         function handball_template_include($template) {
             $queryVar = get_query_var('teams');
             if ($queryVar == 'current') {
@@ -95,10 +103,17 @@ class HandballPlugin
             if ($queryVar == 'all') {
                 $template = WP_PLUGIN_DIR . '/handball/public/views/galleries.php';
             }
+            if (handbalEndsWith($template, 'home.php')) {
+                $template = WP_PLUGIN_DIR . '/handball/public/views/home.php';
+            }
             return $template;
         }
+
+
         add_filter('template_include', 'handball_template_include');
     }
+
+
 
     private function getPluginName()
     {
