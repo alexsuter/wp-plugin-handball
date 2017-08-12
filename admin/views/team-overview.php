@@ -1,5 +1,5 @@
 <?php
-if (! current_user_can('manage_options')) { // TODO Create own capability
+if (! current_user_can('edit_posts')) { // TODO Create own capability
     return;
 }
 

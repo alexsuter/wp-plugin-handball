@@ -164,7 +164,7 @@ class HandballAdminPlugin
     }
     
     public function createAdminMenu() {
-        $capability = 'manage_options'; // TODO Create own capability
+        $capability = 'edit_posts'; // TODO Create own capability
         
         add_menu_page(
             'Handball',

@@ -65,6 +65,9 @@ get_header();
     			</header>
     			<div class="entry-content clearfix">
 					<?php
+					   if (empty($upComingMatches)) {
+					       echo 'Keine Spiele in nächster Zeit.';
+					   }
 					   foreach ($upComingMatches as $match) {
 					       $showScore = false;
 					       $showPreviewLink = true;
@@ -82,6 +85,9 @@ get_header();
     			</header>
     			<div class="entry-content clearfix">
 					<?php
+					if (empty($pastMatches)) {
+					    echo 'Keine Spiele in letzter Zeit.';
+					}
 					foreach ($pastMatches as $match) {
 					       $showScore = true;
 					       $showPreviewLink = false;

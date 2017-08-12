@@ -10,7 +10,7 @@ $galleries = $repo->findAll();
 <div class="wrap">
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
-    		<h1 class="entry-title">Gallerien</h1>
+    		<h1 class="entry-title">Galerie</h1>
     		<div class="entry-content clearfix">
     		<?php
     		$classFirst = "content-column one_third";
