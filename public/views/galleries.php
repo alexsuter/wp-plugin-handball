@@ -20,15 +20,17 @@ $galleries = $repo->findAll();
     		    if ($i % 3 == 0 || $i % 3 == 1) {
     		        echo "<div class='$classFirst' style='padding-right:25px;'>";
     		    } else {
-    		        echo "<div class='$classSecond' style='padding-right:25px;'>";
+    		        echo "<div class='$classLast' style='padding-right:25px;'>";
     		    }
-    		    $i++;
+    		    $i++; 
 
-    		    echo '<h2>' . esc_attr($gallery->getTitle()) . ' <span style="color:#aaa;font-size:12px;">'.$gallery->formattedStartDateLong().'</span></h2>';
+				echo '<span style="position:relative;top:35px;color:#aaa;font-size:12px;">'.$gallery->formattedStartDateLong().'</span>';
+    		    echo '<h2 style="position:relative;top:15px;font-size:18px;">' . esc_attr($gallery->getTitle()) . '</h2>';
+				
 
         		$imgUrl = $gallery->getFirstImageUrlInPost();
         		if (!empty($imgUrl)) {
-        		  echo '<img src="' . $imgUrl .'" />';
+        		  echo '<img style="height:225px;" src="' . $imgUrl .'" />';
         		}
         		?><br /><a href="<?= $gallery->getUrl() ?>" class="more-link">Album anschauen</a><?php
                 echo '</div>';

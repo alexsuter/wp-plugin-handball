@@ -17,15 +17,15 @@ class HandballNextEventWidget extends WP_Widget
 
         $output = '';
         if ($event != null) {
-            $output .= '<h4>';
-            $output .= esc_attr($event->getTitle());
-            $output .= ' <span style="font-size:12px;color:#aaa;">am '.esc_attr($event->formattedStartDateLong()).'</span>';
-            $output .= '</h4>';
-            $output .= '<a href="'.$event->getUrl().'">';
+            $output .= ' <span style="font-weight:bold;font-size:12px;color:#777;">'.esc_attr($event->formattedStartDateLong()).'</span>';
+            $output .= '<b style="display:block;margin-bottom:10px;">';
+			$output .= esc_attr($event->getTitle());
+            $output .= '</b>';
+            $output .= '<a  href="'.$event->getUrl().'">';
             $output .= '<img src="'.$event->getFirstImageUrlInPost().'" />';
             $output .= '</a>';
         }
-
+//style="position:relative;top:-25px;" 
         echo $args['before_widget'];
         if ( ! empty( $instance['title'] ) ) {
             echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
