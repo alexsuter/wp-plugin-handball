@@ -17,12 +17,15 @@ $galleries = $repo->findAll();
     		$classLast = "content-column one_third last_column";
     		$i = 0;
     		foreach ($galleries as $gallery) {
-    		    if ($i % 3 == 0 || $i % 3 == 1) {
-    		        echo "<div class='$classFirst' style='padding-right:25px;'>";
-    		    } else {
+				if ($i % 3 == 0) {
+					echo '<div style="overflow:hidden;">';
+				}
+			
+    		    if ($i % 3 == 2) {
     		        echo "<div class='$classLast' style='padding-right:25px;'>";
+    		    } else {
+    		        echo "<div class='$classFirst' style='padding-right:25px;'>";					
     		    }
-    		    $i++; 
 
 				echo '<span style="position:relative;top:35px;color:#aaa;font-size:12px;">'.$gallery->formattedStartDateLong().'</span>';
     		    echo '<h2 style="position:relative;top:15px;font-size:18px;">' . esc_attr($gallery->getTitle()) . '</h2>';
@@ -34,6 +37,12 @@ $galleries = $repo->findAll();
         		}
         		?><br /><a href="<?= $gallery->getUrl() ?>" class="more-link">Album anschauen</a><?php
                 echo '</div>';
+				
+				if ($i % 3 == 2) {
+					echo '</div>';
+				}
+				
+				$i++; 
     		}
     		?>
     		</div>
