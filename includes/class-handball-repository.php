@@ -155,7 +155,9 @@ class HandballEventRepository
 
     private function loadPostsOfTypeEvent($filterCallable) {
         $postQuery = new WP_Query([
-            'post_type' => 'handball_event'
+            'post_type' => 'handball_event',
+			'post_status' => 'publish',
+			'posts_per_page' => 1000
         ]);
         $events = [];
         while ($postQuery->have_posts()) {
@@ -200,7 +202,8 @@ class HandballGalleryRepository
     {
         $postQuery = new WP_Query([
             'post_type' => 'handball_gallery',
-            'post_status' => 'publish'
+            'post_status' => 'publish',
+			'posts_per_page' => 1000
         ]);
         $galleries= [];
         while ($postQuery->have_posts()) {
