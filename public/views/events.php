@@ -18,9 +18,11 @@ $classLast = "content-column one_third last_column";
     		<div class="entry-content clearfix" style="position:relative;top:-25px;">
     		<?php
 			$i = 0;
+			$open = false;
     		foreach ($upComingEvents as $event) {
 				if ($i % 3 == 0) {
 					echo '<div style="overflow:hidden;">';
+					$open = true;
 				}
 				
 				if ($i % 3 == 0 || $i % 3 == 1) {
@@ -32,10 +34,12 @@ $classLast = "content-column one_third last_column";
 				
 				if ($i % 3 == 2) {
 					echo '</div>';
+					$open = false;
 				}
 				
 				$i++;
     		}
+			if ($open) { echo '</div>'; }
     		?>
     		</div>
 
@@ -45,9 +49,11 @@ $classLast = "content-column one_third last_column";
     		<div class="entry-content clearfix">
     		<?php
 			$i = 0;
+			$open = false;
     		foreach ($pastEvents as $event) {
 				if ($i % 3 == 0) {
 					echo '<div style="overflow:hidden;">';
+					$open = true;
 				}
 				
 				if ($i % 3 == 0 || $i % 3 == 1) {
@@ -59,10 +65,12 @@ $classLast = "content-column one_third last_column";
 				
 				if ($i % 3 == 2) {
 					echo '</div>';
+					$open = false;
 				}
 				
 				$i++;
     		}
+			if ($open) { echo '</div>'; }
     		?>
     		</div>
 		</main>

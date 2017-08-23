@@ -16,9 +16,11 @@ $galleries = $repo->findAll();
     		$classFirst = "content-column one_third";
     		$classLast = "content-column one_third last_column";
     		$i = 0;
+			$open = false;
     		foreach ($galleries as $gallery) {
 				if ($i % 3 == 0) {
 					echo '<div style="overflow:hidden;">';
+					$open = true;
 				}
 			
     		    if ($i % 3 == 2) {
@@ -40,10 +42,12 @@ $galleries = $repo->findAll();
 				
 				if ($i % 3 == 2) {
 					echo '</div>';
+					$open = false;
 				}
 				
 				$i++; 
     		}
+			if ($open) { echo '</div>'; }
     		?>
     		</div>
 		</main>
