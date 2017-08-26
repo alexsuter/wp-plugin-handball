@@ -65,11 +65,9 @@ class HandballPlugin
         $this->loader->add_action('widgets_init', $publicPlugin, 'nextEventWidget');
         $this->loader->add_action('widgets_init', $publicPlugin, 'newestGalleryWidget');
         $this->loader->add_filter('single_template', $publicPlugin, 'addSingleTeamTemplate');
-        $this->loader->add_filter('wp_get_nav_menu_items', $publicPlugin, 'addTeamsToMenu', 20, 2);
         
         // CUSTOM TEAM TEMPLATE!
         function handball_rewrite_rules(){
-            add_rewrite_rule('^teams$', 'index.php?teams=current', 'top');
             add_rewrite_rule('^events$', 'index.php?events=upcoming', 'top');
             add_rewrite_rule('^galerie$', 'index.php?galerie=all', 'top');
             flush_rewrite_rules(true);
@@ -77,7 +75,6 @@ class HandballPlugin
         add_action('init', 'handball_rewrite_rules');
         
         function handball_query_vars($vars) {
-            array_push($vars, 'teams');
             array_push($vars, 'events');
             array_push($vars, 'galerie');
             return $vars;
@@ -93,10 +90,6 @@ class HandballPlugin
         }
         
         function handball_template_include($template) {
-            $queryVar = get_query_var('teams');
-            if ($queryVar == 'current') {
-                $template = WP_PLUGIN_DIR . '/handball/public/views/teams.php';
-            }
             $queryVar = get_query_var('events');
             if ($queryVar == 'upcoming') {
                 $template = WP_PLUGIN_DIR . '/handball/public/views/events.php';

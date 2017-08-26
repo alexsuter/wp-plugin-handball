@@ -8,17 +8,17 @@ require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-repository
 
 class HandballTeamList extends WP_List_Table
 {
-
+    
     private $teamRepo;
     private $saisonRepo;
     private $filterSaison;
-
+    
     public function __construct($args = [])
     {
         parent::__construct($args);
         $this->teamRepo = new HandballTeamRepository();
         $this->saisonRepo = new HandballSaisonRepository();
-
+        
         $saisons = $this->saisonRepo->findAll();
         $defaultSaison = 0;
         foreach ($saisons as $saison) {
@@ -26,22 +26,21 @@ class HandballTeamList extends WP_List_Table
                 $defaultSaison = $saison->getValue();
             }
         }
-
+        
         $this->filterSaison = $defaultSaison;
         if (isset($_GET['saison_filter'])) {
             $this->filterSaison = $_GET['saison_filter'];
         }
     }
-
+    
     function get_columns()
     {
         return [
-            'sort' => 'Sortierung',
             'team_name' => 'Team',
             'actions' => 'Aktionen'
         ];
     }
-
+    
     function prepare_items()
     {
         $columns = $this->get_columns();
@@ -54,14 +53,12 @@ class HandballTeamList extends WP_List_Table
         ];
         $this->items = $this->teamRepo->findAllBySaison(new Saison($this->filterSaison));
     }
-
+    
     function column_default($item, $column_name)
     {
         switch ($column_name) {
             case 'team_id':
                 return $item->getTeamId();
-            case 'sort':
-                return $item->getSort();
             case 'saison':
                 return $item->getSaison()->formattedShort();
             case 'team_name':
@@ -78,7 +75,7 @@ class HandballTeamList extends WP_List_Table
                 return $this->createActionLink($item);
         }
     }
-
+    
     private function createActionLink(Team $team)
     {
         $post = $team->findPost();
@@ -90,7 +87,7 @@ class HandballTeamList extends WP_List_Table
         }
         return '<a href="'.$url.'">'. $text .'</a>';
     }
-
+    
     function extra_tablenav($which)
     {
         if ($which == "top") {

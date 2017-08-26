@@ -4,24 +4,24 @@ require_once ('class-handball-model.php');
 abstract class Repository
 {
     protected $wpdb;
-
+    
     public function __construct()
     {
         global $wpdb;
         $this->wpdb = $wpdb;
     }
-
+    
     protected function mapObjects($rows)
     {
         return array_map([$this, 'mapObject'], $rows);
     }
-
+    
     protected function findOne($query)
     {
         $row = $this->wpdb->get_row($query);
         return $row ? $this->mapObject($row) : null;
     }
-
+    
     protected function findMultiple($query)
     {
         $results = $this->wpdb->get_results($query);
@@ -56,18 +56,18 @@ class HandballTeamRepository extends Repository
             $this->wpdb->insert('handball_team', $data, $format);
         }
     }
-
+    
     private function existsTeam($teamId)
     {
         return $this->findById($teamId) != null;
     }
-
+    
     public function findAll(): array
     {
         $query = 'SELECT * FROM handball_team ORDER BY saison DESC';
         return $this->findMultiple($query);
     }
-
+    
     public function findAllBySaisonWithPost(?Saison $saison): array {
         $teams = $this->findAllBySaison($saison);
         $t = [];
@@ -78,7 +78,7 @@ class HandballTeamRepository extends Repository
         }
         return $t;
     }
-
+    
     public function findAllBySaison(?Saison $saison): array
     {
         if ($saison == null) {
@@ -86,20 +86,15 @@ class HandballTeamRepository extends Repository
         }
         $query = $this->wpdb->prepare('SELECT * FROM handball_team WHERE saison = %s ORDER BY saison DESC', $saison->getValue());
         $teams = $this->findMultiple($query);
-        usort($teams, function (Team $teamA, Team $teamB) {
-            $aSort = empty($teamA->getSort()) ? 100000 : $teamA->getSort();
-            $bSort = empty($teamB->getSort()) ? 100000 : $teamB->getSort();
-            return $aSort > $bSort;
-        });
         return $teams;
     }
-
+    
     public function findById($id)
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_team WHERE team_id = %d', $id);
         return $this->findOne($query);
     }
-
+    
     protected function mapObject($row): Team
     {
         $team = new Team($row->team_id, $row->team_name, $row->saison);
@@ -121,18 +116,18 @@ class HandballSaisonRepository extends Repository
 
 class HandballEventRepository
 {
-
+    
     public function findUpComingEvents()
     {
         $events = $this->loadPostsOfTypeEvent(function ($event) {
             return $event->isUpComing();
         });
-        usort($events, function (Event $a, Event $b) {
-            return $a->getStartTimestamp() > $b->getStartTimestamp();
-        });
-        return $events;
+            usort($events, function (Event $a, Event $b) {
+                return $a->getStartTimestamp() > $b->getStartTimestamp();
+            });
+                return $events;
     }
-
+    
     public function findNextEvent(): ?Event
     {
         $events = $this->findUpComingEvents();
@@ -141,23 +136,23 @@ class HandballEventRepository
         }
         return null;
     }
-
+    
     public function findPastEvents()
     {
         $events = $this->loadPostsOfTypeEvent(function ($event) {
             return ! $event->isUpComing();
         });
-        usort($events, function (Event $a, Event $b) {
-            return $a->getStartTimestamp() < $b->getStartTimestamp();
-        });
-        return $events;
+            usort($events, function (Event $a, Event $b) {
+                return $a->getStartTimestamp() < $b->getStartTimestamp();
+            });
+                return $events;
     }
-
+    
     private function loadPostsOfTypeEvent($filterCallable) {
         $postQuery = new WP_Query([
             'post_type' => 'handball_event',
-			'post_status' => 'publish',
-			'posts_per_page' => 1000
+            'post_status' => 'publish',
+            'posts_per_page' => 1000
         ]);
         $events = [];
         while ($postQuery->have_posts()) {
@@ -181,29 +176,29 @@ class HandballGalleryRepository
             'orderby' => 'publish_date',
             'order' => 'DESC',
         ]);
-
+        
         while ($postQuery->have_posts()) {
             $postQuery->the_post();
             return new Gallery($postQuery->post);
         }
         return null;
     }
-
+    
     public function findAll()
     {
         $galleries = $this->loadPostsOfTypeGallery();
         usort($galleries, function (Gallery $a, Gallery $b) {
             return $a->getDateTimestamp() < $b->getDateTimestamp();
         });
-        return $galleries;
+            return $galleries;
     }
-
+    
     private function loadPostsOfTypeGallery()
     {
         $postQuery = new WP_Query([
             'post_type' => 'handball_gallery',
             'post_status' => 'publish',
-			'posts_per_page' => 1000
+            'posts_per_page' => 1000
         ]);
         $galleries= [];
         while ($postQuery->have_posts()) {
@@ -241,19 +236,19 @@ class HandballGroupRepository extends Repository
             $this->wpdb->insert('handball_group', $data, $format);
         }
     }
-
+    
     public function findGroupsByTeamId($teamId): array
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_group WHERE fk_team_id = %d', $teamId);
         return $this->findMultiple($query);
     }
-
+    
     public function findById($groupId): ?Group
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_group WHERE group_id = %d', $groupId);
         return $this->findOne($query);
     }
-
+    
     protected function mapObject($row): Group
     {
         $group = new Group($row->group_id, $row->fk_team_id);
@@ -264,7 +259,7 @@ class HandballGroupRepository extends Repository
         $group->setRanking($row->ranking);
         return $group;
     }
-
+    
     private function existsGroup($groupId)
     {
         return $this->findById($groupId) != null;
@@ -323,7 +318,7 @@ class HandballMatchRepository extends Repository
             '%d',
             '%d',
         ];
-
+        
         $existingMatch = $this->findById($match->getGameId());
         if ($existingMatch == null) {
             $this->wpdb->insert('handball_match', $data, $format);
@@ -331,38 +326,38 @@ class HandballMatchRepository extends Repository
             $this->wpdb->update('handball_match', $data, ['game_id' => $match->getGameId()], $format, ['%d']);
         }
     }
-
+    
     public function findAll(): array
     {
         return $this->findMultiple('SELECT * FROM handball_match ORDER BY game_datetime');
     }
-
+    
     public function findMatchesForTeam($teamId): array
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_match WHERE fk_team_id = %d ORDER BY game_datetime', $teamId);
         return $this->findMultiple($query);
     }
-
+    
     public function findMatchesNextWeek(): array {
         $query = 'SELECT * FROM handball_match
-            WHERE game_datetime < (DATE_ADD(CURDATE(), INTERVAL 1 WEEK)) AND game_datetime > (CURDATE())
+            WHERE game_datetime < (DATE_ADD(NOW(), INTERVAL 1 WEEK)) AND game_datetime > (NOW())
             ORDER BY game_datetime ASC';
         return $this->findMultiple($query);
     }
-
+    
     public function findMatchesLastWeek(): array {
         $query = 'SELECT * FROM handball_match
-            WHERE game_datetime > (DATE_SUB(CURDATE(), INTERVAL 1 WEEK)) AND game_datetime < (CURDATE())
+            WHERE game_datetime > (DATE_SUB(NOW(), INTERVAL 1 WEEK)) AND game_datetime < (NOW())
             ORDER BY game_datetime ASC';
         return $this->findMultiple($query);
     }
-
+    
     public function findById($id): ?Match
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_match WHERE game_id = %d', $id);
         return $this->findOne($query);
     }
-
+    
     protected function mapObject($row)
     {
         $match= new Match($row->game_id, $row->game_nr, $row->fk_team_id);

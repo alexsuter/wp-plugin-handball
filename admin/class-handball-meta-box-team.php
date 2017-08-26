@@ -9,13 +9,7 @@ class HandballMetaBoxTeam
         if (empty($teamId) && isset($_GET['handball_team_id'])) {
             $teamId= $_GET['handball_team_id'];
         }
-
-        $shortName = get_post_meta($post->ID, 'handball_team_short_name', true);
-
-        $sort = get_post_meta($post->ID, 'handball_team_sort', true);
-        if (empty($sort)) {
-            $sort = 0;
-        }
+        
         ?>
 
         <label for="handball_team_id">Team</label>
@@ -31,19 +25,8 @@ class HandballMetaBoxTeam
             }
         ?>
         </select>
-
 		<br />
-
-		<label for="handball_team_short_name">Kurzname</label>
-        <br />
-        <input name="handball_team_short_name" id="handball_team_short_name" class="postbox" type="text" value="<?= esc_attr($shortName) ?>"></input>
-
-        <br />
-
-        <label for="handball_team_sort">Sortierungsnummer</label>
-        <br />
-        <input name="handball_team_sort" id="handball_team_sort" class="postbox" type="text" value="<?= esc_attr($sort) ?>"></input>
-        <?php
+	   <?php
     }
 }
 
