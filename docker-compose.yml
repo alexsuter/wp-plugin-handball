@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+  mariadb:
+    image: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+    networks:
+      - hcg
+
+  wordpress:
+    image: wordpress:4-php7.1-apache
+    ports:
+      - 80:80
+    volumes:
+      - .//handball:/var/www/html/wp-content/plugins/handball
+    environment:
+      WORDPRESS_DB_PASSWORD: 1234
+      WORDPRESS_DB_HOST: mariadb
+    networks:
+      - hcg
+
+networks:
+  hcg:
