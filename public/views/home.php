@@ -20,7 +20,7 @@ get_header();
 			    
 			    'orderby' => 'publish_date',
 			    'order' => 'DESC',
-			    'posts_per_page' => 6
+			    'posts_per_page' => 2
 			]);
 			
 			$i = 0;
