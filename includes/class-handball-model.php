@@ -704,6 +704,11 @@ class Match
         return $this->getTeamAName() . ' - ' . $this->getLeagueShort();
     }
     
+    public function isHomeGame(): bool
+    {
+        return $this->isTeamAOurTeam();
+    }
+    
     private function isTeamAOurTeam(): bool {
         return
         self::stringContains(strtolower($this->getTeamAName()), 'goldau') ||

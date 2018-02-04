@@ -80,7 +80,7 @@ get_header();
 
 			<div class="content-column one_half" style="padding-right:15px;margin-top:15px">
     			<header class="page-header">
-    				<h1 class="archive-title">Kommende Spiele</h1>
+    				<h1 class="archive-title">Spielplan</h1>
     			</header>
     			<div class="entry-content clearfix">
 					<?php
@@ -93,6 +93,7 @@ get_header();
 					       $showReportLink= true;
 					       $showLeague = false;
 					       $showEncounterWithLeague = true;
+						   $highlightHomeGame = true;
 					       include(WP_PLUGIN_DIR . '/handball/public/templates/_match-detail.php');
 					   }
 					?>
@@ -100,7 +101,7 @@ get_header();
 			</div>
 			<div class="content-column one_half  last_column"  style="margin-top:15px">
     			<header class="page-header">
-    				<h1 class="archive-title">Vergangene Spiele</h1>
+    				<h1 class="archive-title">Resultate</h1>
     			</header>
     			<div class="entry-content clearfix">
 					<?php
@@ -113,6 +114,7 @@ get_header();
 					       $showReportLink = true;
 					       $showLeague = false;
 					       $showEncounterWithLeague = true;
+					       $highlightHomeGame = false;
 					       include(WP_PLUGIN_DIR . '/handball/public/templates/_match-detail.php');
 					   }
 					?>

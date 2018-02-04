@@ -5,9 +5,24 @@
 // $showReportLink:boolean
 // $showLeague:boolean
 // $showEncounterWithLeague:boolean
+// $highlightHomeGame:boolean
 ?>
 
-<div class="entry-content clearfix" style="text-align:center;border-bottom:0px solid #eee;padding-top:15px;padding-bottom:15px; ">
+<?php 
+$highlightHomeGameCSS = '';
+$homegameHeader = '';
+if (isset($highlightHomeGame) && $highlightHomeGame) {
+    if ($match->isHomeGame()) {
+        $highlightHomeGameCSS = 'background-color:black;color:white;';
+        $homegameHeader = '<b>HEIMSPIEL</b> <br />';
+    }
+}
+?>
+
+<div class="entry-content clearfix" style="text-align:center;border-bottom:0px solid #eee;padding-top:15px;padding-bottom:15px;<?= $highlightHomeGameCSS ?>">
+	
+	<?= $homegameHeader ?>
+	
 	<?= $match->getGameDateTimeFormattedShort() ?> Uhr in <?= $match->getVenue() ?>
 
 	<br />

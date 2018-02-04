@@ -33,6 +33,7 @@ get_header(); ?>
     			$showReportLink= false;
     			$showLeague = true;
     			$showEncounterWithLeague = false;
+    			$highlightHomeGame = false;
     			include '_match-detail.php';
 
     			the_content();
