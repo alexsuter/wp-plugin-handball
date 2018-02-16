@@ -706,7 +706,26 @@ class Match
     
     public function isHomeGame(): bool
     {
-        return $this->isTeamAOurTeam();
+        if ($this->isAnimationGame()) {
+            return $this->isGameInGoldau();
+        } else {
+            return $this->isTeamAOurTeam() && $this->isGameAtHome();
+        }
+    }
+    
+    private function isAnimationGame(): bool {
+        return
+        self::stringContains(strtolower($this->getLeagueLong()), 'u13') ||
+        self::stringContains(strtolower($this->getLeagueLong()), 'u12') ||
+        self::stringContains(strtolower($this->getLeagueLong()), 'u11') ||
+        self::stringContains(strtolower($this->getLeagueLong()), 'u10') ||
+        self::stringContains(strtolower($this->getLeagueLong()), 'u9');
+    }
+    
+    private function isGameInGoldau(): bool {
+        return
+        self::stringContains(strtolower($this->getVenue()), 'arth') ||
+        self::stringContains(strtolower($this->getVenue()), 'goldau');
     }
     
     private function isTeamAOurTeam(): bool {
@@ -714,6 +733,17 @@ class Match
         self::stringContains(strtolower($this->getTeamAName()), 'goldau') ||
         self::stringContains(strtolower($this->getTeamAName()), 'shooters');
     }
+    
+    private function isGameAtHome(): bool {
+        return
+        self::stringContains(strtolower($this->getVenue()), 'arth') ||
+        self::stringContains(strtolower($this->getVenue()), 'goldau') ||
+        self::stringContains(strtolower($this->getVenue()), 'schwyz') ||
+        self::stringContains(strtolower($this->getVenue()), 'brunnen') ||
+        self::stringContains(strtolower($this->getVenue()), 'muotathal');
+    }
+    
+    
     
     private static function stringContains($string, $contains) {
         return (strpos($string, $contains) !== false);
