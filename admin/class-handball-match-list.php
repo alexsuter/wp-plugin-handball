@@ -6,17 +6,23 @@ if (! class_exists('WP_List_Table')) {
 require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-model.php');
 require_once (plugin_dir_path(__FILE__) . '../includes/class-handball-repository.php');
 
+if (isset($_GET['deleteMatch'])) {
+    $gameId= $_GET['deleteMatch'];
+    $repo = new HandballMatchRepository();
+    $repo->delete($gameId);
+}
+
 class HandballMatchList extends WP_List_Table
 {
-
+    
     private $matchRepo;
-
+    
     public function __construct($args = [])
     {
         parent::__construct($args);
         $this->matchRepo = new HandballMatchRepository();
     }
-
+    
     function get_columns()
     {
         return [
@@ -27,7 +33,7 @@ class HandballMatchList extends WP_List_Table
             'actions'  => 'Aktionen',
         ];
     }
-
+    
     function prepare_items($nextWeek = false, $lastWeek = false)
     {
         $columns = $this->get_columns();
@@ -38,7 +44,7 @@ class HandballMatchList extends WP_List_Table
             $hidden,
             $sortable
         ];
-
+        
         if ($nextWeek) {
             $this->items = $this->matchRepo->findMatchesNextWeek();
         } else if ($lastWeek) {
@@ -47,7 +53,7 @@ class HandballMatchList extends WP_List_Table
             $this->items = $this->matchRepo->findAll();
         }
     }
-
+    
     function column_default($item, $column_name)
     {
         switch ($column_name) {
@@ -64,10 +70,22 @@ class HandballMatchList extends WP_List_Table
             case 'venue':
                 return $item->getVenue();
             case 'actions':
-                return $this->createActionLink($item, 'preview') . '<br />' . $this->createActionLink($item, 'report');
+                return
+                $this->createActionLink($item, 'preview')
+                . '<br />'
+                    . $this->createActionLink($item, 'report')
+                    . '<br />'
+                        . $this->createDeleteLink($item);
         }
     }
-
+    
+    private function createDeleteLink(Match $match): string
+    {
+        $id = $match->getGameId();
+        $url = '/wp-admin/admin.php?page=handball_match&deleteMatch=' . $id;
+        return '<a class="wp-menu-image dashicons-before dashicons-trash" onclick="return confirm(\'Match wirklich l&ouml;schen?\')" href="'.$url.'">L&ouml;schen</a>';
+    }
+    
     private function createActionLink(Match $match, $gameReportType)
     {
         $type = null;
@@ -79,14 +97,14 @@ class HandballMatchList extends WP_List_Table
             $type = 'Bericht';
             $post = $match->getPostReport();
         }
-
+        
         $icon = 'plus';
         $url  = '/wp-admin/post-new.php?post_type=handball_match&handball_game_report_type=' . $gameReportType . '&handball_game_id=' . $match->getGameId();
         if ($post != null) {
             $icon = 'edit';
             $url = '/wp-admin/post.php?post='.$post->ID.'&action=edit';
         }
-
+        
         return '<a class="wp-menu-image dashicons-before dashicons-'.$icon.'" href="'.$url.'">'.$type .'</a>';
     }
 }

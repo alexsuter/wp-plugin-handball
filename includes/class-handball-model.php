@@ -739,8 +739,7 @@ class Match
         self::stringContains(strtolower($this->getVenue()), 'arth') ||
         self::stringContains(strtolower($this->getVenue()), 'goldau') ||
         self::stringContains(strtolower($this->getVenue()), 'schwyz') ||
-        self::stringContains(strtolower($this->getVenue()), 'brunnen') ||
-        self::stringContains(strtolower($this->getVenue()), 'muotathal');
+        self::stringContains(strtolower($this->getVenue()), 'brunnen');
     }
     
     

@@ -358,6 +358,11 @@ class HandballMatchRepository extends Repository
         return $this->findOne($query);
     }
     
+    public function delete($gameId)
+    {
+        $this->wpdb->delete('handball_match', ['game_id' => $gameId]);
+    }
+    
     protected function mapObject($row)
     {
         $match= new Match($row->game_id, $row->game_nr, $row->fk_team_id);
