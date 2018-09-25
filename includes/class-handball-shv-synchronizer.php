@@ -144,7 +144,7 @@ class HandballShvSynchronizer
             return;
         }
 
-        $group = $this->groupRepo->findById($responseGroup->groupId);
+        $group = $this->groupRepo->findById($responseGroup->groupId, $teamId);
         if ($group == null) {
             $group = new Group($responseGroup->groupId, $teamId);
         }

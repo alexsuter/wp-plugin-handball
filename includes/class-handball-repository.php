@@ -230,7 +230,7 @@ class HandballGroupRepository extends Repository
             '%s',
             '%d'
         ];
-        if ($this->existsGroup($group->getGroupId())) {
+        if ($this->existsGroup($group->getGroupId(), $group->getTeamId())) {
             $this->wpdb->update('handball_group', $data, ['group_id' => $group->getGroupId()], $format, ['%d']);
         } else {
             $this->wpdb->insert('handball_group', $data, $format);
@@ -243,9 +243,9 @@ class HandballGroupRepository extends Repository
         return $this->findMultiple($query);
     }
     
-    public function findById($groupId): ?Group
+    public function findById($groupId, $teamId): ?Group
     {
-        $query = $this->wpdb->prepare('SELECT * FROM handball_group WHERE group_id = %d', $groupId);
+        $query = $this->wpdb->prepare('SELECT * FROM handball_group WHERE group_id = %d AND team_id = %d', $groupId, $teamId);
         return $this->findOne($query);
     }
     
@@ -260,9 +260,9 @@ class HandballGroupRepository extends Repository
         return $group;
     }
     
-    private function existsGroup($groupId)
+    private function existsGroup($groupId, $teamId)
     {
-        return $this->findById($groupId) != null;
+        return $this->findById($groupId, $teamId) != null;
     }
 }
 
