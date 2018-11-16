@@ -245,7 +245,7 @@ class HandballGroupRepository extends Repository
     
     public function findById($groupId, $teamId): ?Group
     {
-        $query = $this->wpdb->prepare('SELECT * FROM handball_group WHERE group_id = %d AND team_id = %d', $groupId, $teamId);
+        $query = $this->wpdb->prepare('SELECT * FROM handball_group WHERE group_id = %d AND fk_team_id = %d', $groupId, $teamId);
         return $this->findOne($query);
     }
     
