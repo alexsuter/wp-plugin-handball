@@ -231,7 +231,7 @@ class HandballGroupRepository extends Repository
             '%d'
         ];
         if ($this->existsGroup($group->getGroupId(), $group->getTeamId())) {
-            $this->wpdb->update('handball_group', $data, ['group_id' => $group->getGroupId()], $format, ['%d']);
+            $this->wpdb->update('handball_group', $data, ['group_id' => $group->getGroupId(), 'fk_team_id' => $group->getTeamId()], $format, ['%d']);
         } else {
             $this->wpdb->insert('handball_group', $data, $format);
         }
