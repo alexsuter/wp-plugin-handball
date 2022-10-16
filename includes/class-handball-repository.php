@@ -268,7 +268,7 @@ class HandballGroupRepository extends Repository
 
 class HandballMatchRepository extends Repository
 {
-    public function saveMatch(Match $match)
+    public function saveMatch($match)
     {
         $data = [
             'game_id' => $match->getGameId(),

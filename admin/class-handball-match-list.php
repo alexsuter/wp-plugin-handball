@@ -79,14 +79,14 @@ class HandballMatchList extends WP_List_Table
         }
     }
     
-    private function createDeleteLink(Match $match): string
+    private function createDeleteLink($match): string
     {
         $id = $match->getGameId();
         $url = '/wp-admin/admin.php?page=handball_match&deleteMatch=' . $id;
         return '<a class="wp-menu-image dashicons-before dashicons-trash" onclick="return confirm(\'Match wirklich l&ouml;schen?\')" href="'.$url.'">L&ouml;schen</a>';
     }
     
-    private function createActionLink(Match $match, $gameReportType)
+    private function createActionLink($match, $gameReportType)
     {
         $type = null;
         $post = null;
