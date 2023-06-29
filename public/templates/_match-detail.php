@@ -1,5 +1,5 @@
 <?php
-// $match:Match
+// $match:Game
 // $showScore:boolean
 // $showPreviewLink:boolean
 // $showReportLink:boolean
