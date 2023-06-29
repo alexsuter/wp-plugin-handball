@@ -415,7 +415,7 @@ class Ranking
     }
 }
 
-class Match
+class Game
 {
     
     private $gameId;

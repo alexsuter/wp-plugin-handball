@@ -352,7 +352,7 @@ class HandballMatchRepository extends Repository
         return $this->findMultiple($query);
     }
     
-    public function findById($id): ?Match
+    public function findById($id): ?Game
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_match WHERE game_id = %d', $id);
         return $this->findOne($query);
@@ -365,7 +365,7 @@ class HandballMatchRepository extends Repository
     
     protected function mapObject($row)
     {
-        $match= new Match($row->game_id, $row->game_nr, $row->fk_team_id);
+        $match= new Game($row->game_id, $row->game_nr, $row->fk_team_id);
         $match->setTeamAName($row->team_a_name);
         $match->setTeamBName($row->team_b_name);
         $match->setGameDateTime($row->game_datetime);

@@ -108,7 +108,7 @@ class HandballShvSynchronizer
             
             $match = $this->matchRepo->findById($responseMatch->gameId);
             if ($match == null) {
-                $match = new Match($responseMatch->gameId, $responseMatch->gameNr, $teamId);
+                $match = new Game($responseMatch->gameId, $responseMatch->gameNr, $teamId);
             }
             $match->setGameNr($responseMatch->gameNr);
             $match->setTeamAName($responseMatch->teamAName);
