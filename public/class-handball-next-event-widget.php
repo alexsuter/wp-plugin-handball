@@ -10,15 +10,19 @@ class HandballNextEventWidget extends WP_Widget
         parent::__construct('handball_next_event_widget', 'Next Event');
         $this->eventRepo= new HandballEventRepository();
     }
-    
+
+    private function getNumberOfEvents() {
+		return get_option('HANDBALL_NUMBER_OF_EVENTS_TO_SHOW', 3);
+	}
+	
     public function widget($args, $instance)
     {
         $output = '';
-        $events = $this->eventRepo->findUpComingEvents();
-        $events = array_slice($events, 0, 3);
-        foreach ($events as $event) {
-            $output .= $this->renderEvent($event);
-        }
+		$events = $this->eventRepo->findUpComingEvents();
+		$events = array_slice($events, 0, $this->getNumberOfEvents());
+		foreach ($events as $event) {
+			$output .= $this->renderEvent($event);
+		}
         
         echo $args['before_widget'];
         if ( ! empty( $instance['title'] ) ) {
