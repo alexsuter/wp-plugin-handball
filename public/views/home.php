@@ -23,6 +23,7 @@ get_header();
 			    'posts_per_page' => 4
 			]);
 			
+			$open = false;
 			$i = 0;
 			while ($postQuery->have_posts()) {
 			    $postQuery->the_post();
