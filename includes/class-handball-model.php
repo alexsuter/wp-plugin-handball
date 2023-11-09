@@ -364,6 +364,16 @@ class Ranking
         $this->jsonObject = $jsonObject;
     }
     
+    public function getTeamId()
+    {
+        return $this->jsonObject->teamId;
+    }
+
+    public function getClubId() 
+    {
+        return $this->jsonObject->clubId;    
+    }
+
     public function getRank()
     {
         return $this->jsonObject->rank;
@@ -816,7 +826,7 @@ class WpPostHelper {
         ob_start();
         ob_end_clean();
         $output = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches);
-        return $matches[1][0];
+        return $matches[1][0] ?? '';
     }
     
 }

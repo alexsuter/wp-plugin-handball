@@ -56,13 +56,12 @@ get_header(); ?>
 					<div class="responsive-table-container">
                     	<table>
                     		<tr>
-                    			<th style="width:35px;"></th>
-    							<th style="width:300px;"></th>
-    							<th style="width:55px;">Pkt.</th>
+								<th style="width:340px;"></th>
     							<th style="width:55px;">Spiele</th>
+    							<th style="width:55px;">Pkt.</th>
     							<th style="width:55px;">Siege</th>
-    							<th style="width:55px;">Nied.</th>
     							<th style="width:55px;">Unent.</th>
+    							<th style="width:55px;">Nied.</th>
     							<th style="width:55px;">T+</th>
     							<th style="width:55px;">T-</th>
     							<th style="width:55px;">TD</th>
@@ -71,13 +70,16 @@ get_header(); ?>
                     	   foreach ($group->getRankings() as $ranking) {
                     	       ?>
                     	       <tr>
-                    	       	<td class="td-ranking"><?= $ranking->getRank(); ?></td>
-                    	       	<td><?= $ranking->getTeamName(); ?></td>
+                    	       	<td class="">
+									<?= $ranking->getRank(); ?>
+									<img style="position:relative;top:15px;" src="https://www.handball.ch/images/logo/<?= $ranking->getTeamId() ?>.png?fallbackType=club&fallbackId=<?= $ranking->getClubId() ?>&width=35&height=35&rmode=pad&format=png" />
+									<?= $ranking->getTeamName(); ?>
+								</td>
+								<td class="td-ranking"><?= $ranking->getTotalGames() ?></td>
                     	       	<td class="td-ranking"><?= $ranking->getTotalPoints() ?></td>
-                    	       	<td class="td-ranking"><?= $ranking->getTotalGames() ?></td>
                     	       	<td class="td-ranking"><?= $ranking->getTotalWins(); ?></td>
-                    	       	<td class="td-ranking"><?= $ranking->getTotalLoss(); ?></td>
                     	       	<td class="td-ranking"><?= $ranking->getTotalDraws(); ?></td>
+                    	       	<td class="td-ranking"><?= $ranking->getTotalLoss(); ?></td>
                     	       	<td class="td-ranking"><?= $ranking->getTotalScoresPlus(); ?></td>
                     	       	<td class="td-ranking"><?= $ranking->getTotalScoresMinus(); ?></td>
                     	       	<td class="td-ranking"><?= $ranking->getTotalScoresDiff(); ?></td>

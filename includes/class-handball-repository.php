@@ -122,10 +122,12 @@ class HandballEventRepository
         $events = $this->loadPostsOfTypeEvent(function ($event) {
             return $event->isUpComing();
         });
-            usort($events, function (Event $a, Event $b) {
-                return $a->getStartTimestamp() > $b->getStartTimestamp();
-            });
-                return $events;
+        
+        usort($events, function (Event $a, Event $b) {
+          return $a->getStartTimestamp() <=> $b->getStartTimestamp();
+        });
+
+        return $events;
     }
     
     public function findNextEvent(): ?Event
@@ -142,10 +144,10 @@ class HandballEventRepository
         $events = $this->loadPostsOfTypeEvent(function ($event) {
             return ! $event->isUpComing();
         });
-            usort($events, function (Event $a, Event $b) {
-                return $a->getStartTimestamp() < $b->getStartTimestamp();
-            });
-                return $events;
+        usort($events, function (Event $a, Event $b) {
+          return $b->getStartTimestamp() <=> $a->getStartTimestamp();
+        });
+        return $events;
     }
     
     private function loadPostsOfTypeEvent($filterCallable) {
@@ -188,9 +190,9 @@ class HandballGalleryRepository
     {
         $galleries = $this->loadPostsOfTypeGallery();
         usort($galleries, function (Gallery $a, Gallery $b) {
-            return $a->getDateTimestamp() < $b->getDateTimestamp();
+            return $b->getDateTimestamp() <=> $a->getDateTimestamp();
         });
-            return $galleries;
+        return $galleries;
     }
     
     private function loadPostsOfTypeGallery()
