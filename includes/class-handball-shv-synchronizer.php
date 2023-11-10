@@ -113,6 +113,10 @@ class HandballShvSynchronizer
             $match->setGameNr($responseMatch->gameNr);
             $match->setTeamAName($responseMatch->teamAName);
             $match->setTeamBName($responseMatch->teamBName);
+            $match->setTeamAId($responseMatch->teamAId);
+            $match->setTeamBId($responseMatch->teamBId);
+            $match->setTeamAClubId($responseMatch->clubTeamAId);
+            $match->setTeamBClubId($responseMatch->clubTeamBId);
             $match->setGameDateTime($responseMatch->gameDateTime);
             $match->setGameTypeLong($responseMatch->gameTypeLong);
             $match->setGameTypeShort($responseMatch->gameTypeShort);

@@ -60,8 +60,6 @@ class HandballPlugin
         $this->loader->add_action('init', $publicPlugin, 'registerPostTypeTeam');
         $this->loader->add_action('init', $publicPlugin, 'registerPostTypeEvent');
         $this->loader->add_action('init', $publicPlugin, 'registerPostTypeGallery');
-        $this->loader->add_action('widgets_init', $publicPlugin, 'upcomingMatchesWidget');
-        $this->loader->add_action('widgets_init', $publicPlugin, 'playedMatchesWidget');
         $this->loader->add_action('widgets_init', $publicPlugin, 'nextEventWidget');
         $this->loader->add_action('widgets_init', $publicPlugin, 'newestGalleryWidget');
         $this->loader->add_filter('single_template', $publicPlugin, 'addSingleTeamTemplate');

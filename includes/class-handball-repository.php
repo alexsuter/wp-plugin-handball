@@ -295,6 +295,10 @@ class HandballMatchRepository extends Repository
             'team_b_score_ft' => $match->getTeamBScoreFT(),
             'spectators' => $match->getSpectators(),
             'round_nr' => $match->getRoundNr(),
+            'team_a_id' => $match->getTeamAId(),
+            'team_b_id' => $match->getTeamBId(),
+            'team_a_club_id' => $match->getTeamAClubId(),
+            'team_b_club_id' => $match->getTeamBClubId(),
         ];
         $format = [
             '%d',
@@ -370,6 +374,11 @@ class HandballMatchRepository extends Repository
         $match= new Game($row->game_id, $row->game_nr, $row->fk_team_id);
         $match->setTeamAName($row->team_a_name);
         $match->setTeamBName($row->team_b_name);
+        $match->setTeamAId($row->team_a_id);
+        $match->setTeamBId($row->team_b_id);
+        $match->setTeamAClubId($row->team_a_club_id);
+        $match->setTeamBClubId($row->team_b_club_id);
+
         $match->setGameDateTime($row->game_datetime);
         $match->setLeagueShort($row->league_short);
         $match->setLeagueLong($row->league_long);

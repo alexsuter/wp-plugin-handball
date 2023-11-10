@@ -436,8 +436,12 @@ class Game
     private $teamId;
     
     private $teamAName;
+    private $teamAId;
+    private $teamAClubId;
     
     private $teamBName;
+    private $teamBId;
+    private $teamBClubId;
     
     private $gameDateTime;
     
@@ -509,7 +513,37 @@ class Game
     {
         return $this->teamAName;
     }
+
+    public function setTeamAId($teamAId)
+    {
+        $this->teamAId = $teamAId;
+    }
     
+    public function getTeamAId()
+    {
+        return $this->teamAId;
+    }
+
+    public function setTeamAClubId($teamAClubId)
+    {
+        $this->teamAClubId = $teamAClubId;
+    }
+    
+    public function getTeamAClubId()
+    {
+        return $this->teamAClubId;
+    }
+
+    public function getTeamAImageUrl($size)
+    {
+        return "https://www.handball.ch/images/logo/".$this->getTeamAId().".png?fallbackType=club&fallbackId=".$this->getTeamAClubId()."&width=$size&height=$size&rmode=pad&format=png";
+    }
+
+    public function getTeamBImageUrl($size)
+    {
+        return "https://www.handball.ch/images/logo/".$this->getTeamBId().".png?fallbackType=club&fallbackId=".$this->getTeamBClubId()."&width=$size&height=$size&rmode=pad&format=png";
+    }
+
     public function setTeamBName($teamBName)
     {
         $this->teamBName = $teamBName;
@@ -518,6 +552,26 @@ class Game
     public function getTeamBName()
     {
         return $this->teamBName;
+    }
+
+    public function setTeamBId($teamBId)
+    {
+        $this->teamBId = $teamBId;
+    }
+    
+    public function getTeamBId()
+    {
+        return $this->teamBId;
+    }
+
+    public function setTeamBClubId($teamBClubId)
+    {
+        $this->teamBClubId = $teamBClubId;
+    }
+    
+    public function getTeamBClubId()
+    {
+        return $this->teamBClubId;
     }
     
     public function setGameDateTime($gameDateTime)

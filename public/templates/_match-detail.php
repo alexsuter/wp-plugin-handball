@@ -9,23 +9,27 @@
 ?>
 
 <?php 
-$highlightHomeGameCSS = '';
-$homegameHeader = '';
+$highlightHomeGameCSS = 'background-color:rgba(0, 61, 102, 0.1);';
+$homegameHeader = '<b>AUSWÄRTSSPIEL</b>';
 if (isset($highlightHomeGame) && $highlightHomeGame) {
     if ($match->isHomeGame()) {
-        $highlightHomeGameCSS = 'background-color:black;color:white;';
-        $homegameHeader = '<b>HEIMSPIEL</b> <br />';
+        //$highlightHomeGameCSS = 'background-color:rgba(242, 128, 0, 0.1);';
+        $homegameHeader = '<b>HEIMSPIEL</b>';
     }
 }
 ?>
 
-<div class="entry-content clearfix" style="text-align:center;border-bottom:0px solid #eee;padding-top:15px;padding-bottom:15px;<?= $highlightHomeGameCSS ?>">
-	
-	<?= $homegameHeader ?>
-	
-	<?= $match->getGameDateTimeFormattedShort() ?> Uhr in <?= $match->getVenue() ?>
+<div class="entry-content clearfix" style="text-align:center;border-bottom:0px solid #eee;margin-bottom:5px;padding-top:20px;padding-bottom:15px;<?= $highlightHomeGameCSS ?>">
 
-	<br />
+    <?php 
+      if (!$match->isPlayed()) {
+        ?>
+          <div style="margin-bottom:10px;">
+            <?= $homegameHeader ?>
+          </div>
+        <?php
+      }
+    ?>
 
 	<?php
 	   if ($showLeague) {
@@ -33,6 +37,11 @@ if (isset($highlightHomeGame) && $highlightHomeGame) {
 	       echo '<br />';
 	   }
 	?>
+
+    <img style="position:relative;right:15px;" src="<?= $match->getTeamAImageUrl(60) ?>" />
+    <span style="position:relative;bottom:20px;font-weight:normal;font-size:30px;">-</span>
+    <img style="position:relative;left:15px;" src="<?= $match->getTeamBImageUrl(60) ?>" />
+    <br />
 
 	<span style="font-size:20px;">
 		<?php
@@ -44,12 +53,24 @@ if (isset($highlightHomeGame) && $highlightHomeGame) {
 		?>
 	</span>
 
-	<?php
-	if ($showScore) {
-        echo '<br />';
-        echo $match->getScore();
-    }
+    <br />
 
+    <?php
+     if (!$match->isPlayed()) {
+        echo $match->getGameDateTimeFormattedShort(); 
+        echo " Uhr in ";
+        echo $match->getVenue();
+     } else {
+       echo $match->getScore();
+     }
+    ?>
+	<br />
+
+	<?php
+//	if ($showScore) {
+//    }
+
+/*
 	 if ($showPreviewLink || $showReportLink) {
 
         $previewUrl = $match->getPostPreviewUrl();
@@ -75,6 +96,7 @@ if (isset($highlightHomeGame) && $highlightHomeGame) {
             }
         }
     }
+    */
     ?>
 
 </div>

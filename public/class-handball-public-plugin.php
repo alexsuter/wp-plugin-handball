@@ -71,19 +71,7 @@ class HandballPublicPlugin
                 'slug' => 'galerie'
             ]
         ]);
-    }
-    
-    public function upcomingMatchesWidget()
-    {
-        require_once ('class-handball-upcoming-matches-widget.php');
-        register_widget('HandballUpcomingMatchesWidget');
-    }
-    
-    public function playedMatchesWidget()
-    {
-        require_once ('class-handball-played-matches-widget.php');
-        register_widget('HandballPlayedMatchesWidget');
-    }
+    }    
     
     public function nextEventWidget()
     {

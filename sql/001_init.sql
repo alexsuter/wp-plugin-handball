@@ -47,3 +47,9 @@ ALTER TABLE handball_group ADD COLUMN fk_team_id INTEGER NOT NULL;
 ALTER TABLE handball_group ADD FOREIGN KEY (fk_team_id) REFERENCES handball_team(team_id);
 
 ALTER TABLE handball_group DROP PRIMARY KEY, ADD PRIMARY KEY (group_id, fk_team_id);
+
+-- new stuff
+ALTER TABLE handball_match ADD COLUMN team_a_id INTEGER;
+ALTER TABLE handball_match ADD COLUMN team_b_id INTEGER;
+ALTER TABLE handball_match ADD COLUMN team_a_club_id INTEGER;
+ALTER TABLE handball_match ADD COLUMN team_b_club_id INTEGER;
