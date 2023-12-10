@@ -200,6 +200,24 @@ class Event
     {
         return date('d.m.Y', $this->getStartTimestamp());
     }
+
+    public function getDay()
+    {
+        return date('d', $this->getStartTimestamp());
+    }
+
+    public function getMonth()
+    {
+        $fmt = datefmt_create(
+            'de-CH',
+            IntlDateFormatter::FULL,
+            IntlDateFormatter::NONE,
+            'Europe/Zurich',
+            IntlDateFormatter::GREGORIAN,
+            'MMMM'
+        );
+        return datefmt_format($fmt, $this->getStartTimestamp());
+    }
     
     public function formattedStartDateTimeLong()
     {
@@ -220,7 +238,11 @@ class Event
     {
         return get_permalink($this->post);
     }
-    
+
+    public function hasContent(): bool {
+        $content = trim($this->post->post_content);
+        return !empty($content);
+    }
 }
 
 class Saison
@@ -806,6 +828,19 @@ class Game
         self::stringContains(strtolower($this->getVenue()), 'brunnen');
     }
     
+    public function getOpponentTeamName() {
+        if ($this->isTeamAOurTeam()) {
+            return $this->getTeamBName();
+        }
+        return $this->getTeamAName();
+    }
+
+    public function getOpponentTeamImageUrl($size) {
+        if ($this->isTeamAOurTeam()) {
+            return $this->getTeamBImageUrl($size);
+        }
+        return $this->getTeamAImageUrl($size);
+    }
     
     
     private static function stringContains($string, $contains) {
@@ -816,6 +851,10 @@ class Game
         return $this->getTeamAScoreFT() . ':' . $this->getTeamBScoreFT()
         . ' (' . $this->getTeamAScoreHT() . ':' . $this->getTeamBScoreHT() . ')'
             ;
+    }
+
+    public function getLivetickerUrl() {
+        return "https://www.handball.ch/de/matchcenter/spiele/" . $this->getGameId();
     }
     
     public function getPostPreview() {

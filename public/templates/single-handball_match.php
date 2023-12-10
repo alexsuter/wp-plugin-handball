@@ -45,6 +45,40 @@ get_header(); ?>
 		</main>
 	</section>
 
-	<?php get_sidebar(); ?>
+<section id="secondary" class="sidebar widget-area clearfix" role="complementary">
 
-<?php get_footer(); ?>
+
+  <?
+  $teamId = $match->getTeamId();
+
+
+	$teamRepo = new HandballTeamRepository();
+	$team = $teamRepo->findById($teamId);
+	if ($team != null) {
+		$post = $team->findPost();
+		$imgUrl = WpPostHelper::getFirstImageUrlInPost($post);
+
+		?>
+
+		<div>
+		<h3>Team</h3>
+		<img src="<? echo $imgUrl ?>" />
+
+		</div>
+
+		<?
+
+	}
+	
+  ?>
+
+<?
+	
+  	include '_group.php';
+  ?>
+
+</section>
+
+<?
+  get_footer();
+?>

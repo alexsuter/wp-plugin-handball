@@ -28,28 +28,43 @@ class HandballNextEventWidget extends WP_Widget
         if ( ! empty( $instance['title'] ) ) {
             echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
         }
-        echo '<div class="textwidget" style="margin-bottom:0px;">';
         if (empty($output)) {
             echo 'Momentan stehen keine Events an.';
         } else {
             echo $output;
-        }
-        echo '</div>';
+        }        
         echo $args['after_widget'];
     }
     
     private function renderEvent(Event $event): string {
         $output = '';
         
-        $output .= '<a href="'.$event->getUrl().'">';
-        $output .= '<span style="font-weight:bold;font-size:12px;color:#777;">'.esc_attr($event->formattedStartDateLong()).'</span>';
-        $output .= '<b style="display:block;margin-bottom:10px;">';
-        $output .= esc_attr($event->getTitle());
-        $output .= '</b>';
-        if (!empty($event->getFirstImageUrlInPost())) {
-            $output .= '<img src="'.$event->getFirstImageUrlInPost().'" />';
+        //$output .= '<a href="'.$event->getUrl().'">';
+
+        $hidden = "visibility:hidden;";
+        if ($event->hasContent()) {
+            $hidden = '';
         }
-        $output .= '</a>';
+
+        $output .= "
+        
+        <div style='margin-bottom:10px;'>
+            <div class='background-orange' style='width:50px;height:60px;text-align:center;padding-top:8px;float:left;'>
+                <div style='font-size:24px;font-weight:bold;color:white;'>
+                    <span>".esc_attr($event->getDay())."</span>
+                </div>
+                <div style='font-size:14px;font-weight:bold;color:white;text-transform:uppercase;'>
+                    <span style='font-size:14px;font-weight:bold;color:white;'>".esc_attr($event->getMonth())."</span>
+                </div>
+            </div>
+            <div class='clearfix' style='border:2px solid var(--orange);padding-left:60px;font-size:20px;background-color:var(--blue);color:white;font-weight:bold;'>
+               <a style='display:block;color:white;font-weight:bold;".$hidden.";width:40px;text-align:center;height:58px;padding-top:18px;float:right;background-color: var(--orange)' href='".$event->getUrl()."'>></a>
+               <div class='clearfix' style='padding-top:18px;'>
+                ".esc_attr($event->getTitle())."
+                </div>
+            </div>
+        </div>
+        ";
         return $output;
     }
     

@@ -123,7 +123,7 @@ class HandballShvSynchronizer
             $match->setLeagueLong($responseMatch->leagueLong);
             $match->setLeagueShort($responseMatch->leagueShort);
             $match->setGameStatus($responseMatch->gameStatus);
-            $match->setRound($responseMatch->round);
+            $match->setRound($responseMatch->round ?? null);
             $match->setRoundNr($responseMatch->roundNr);
             $match->setSpectators($responseMatch->spectators);
             $match->setTeamAScoreFT($responseMatch->teamAScoreFT);

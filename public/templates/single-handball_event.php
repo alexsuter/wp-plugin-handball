@@ -16,7 +16,7 @@
         		$event = new Event($post);
 
 
-        		echo '<div><span style="color:#aaa;">'.
+        		echo '<div><span>'.
         		  esc_attr($event->formattedStartDateTimeLong()).' Uhr -
                  '.esc_attr($event->formattedEndDateTimeLong()).' Uhr</span></div>';
 

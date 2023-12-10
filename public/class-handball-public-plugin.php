@@ -78,6 +78,12 @@ class HandballPublicPlugin
         require_once ('class-handball-next-event-widget.php');
         register_widget('HandballNextEventWidget');
     }
+
+    public function featuredGameWidget()
+    {
+        require_once ('class-handball-featured-game-widget.php');
+        register_widget('HandballFeaturedGameWidget');
+    }
     
     public function newestGalleryWidget()
     {

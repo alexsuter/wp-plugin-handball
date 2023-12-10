@@ -89,7 +89,7 @@ class HandballTeamRepository extends Repository
         return $teams;
     }
     
-    public function findById($id)
+    public function findById($id): ?Team
     {
         $query = $this->wpdb->prepare('SELECT * FROM handball_team WHERE team_id = %d', $id);
         return $this->findOne($query);
@@ -356,6 +356,19 @@ class HandballMatchRepository extends Repository
             WHERE game_datetime > (DATE_SUB(NOW(), INTERVAL 1 WEEK)) AND game_datetime < (NOW())
             ORDER BY game_datetime ASC';
         return $this->findMultiple($query);
+    }
+
+    public function findNextMatch(string $leage): ?Game {
+        $query = 'SELECT * FROM handball_match
+            WHERE game_datetime < (DATE_ADD(NOW(), INTERVAL 1 WEEK)) AND game_datetime > (NOW())
+            ORDER BY game_datetime ASC';
+
+        foreach ($this->findMultiple($query) as $game) {
+            if ($game->getLeagueShort() == $leage) {
+                return $game;
+            }
+        }
+        return null;
     }
     
     public function findById($id): ?Game

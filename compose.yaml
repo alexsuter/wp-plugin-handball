@@ -14,7 +14,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - /home/alex/git/wp-theme-hcg/hcg:/var/www/html/wp-content/themes/shooters
+      - /home/alex/git/wp-theme-hcg/shooters:/var/www/html/wp-content/themes/shooters
       - .:/var/www/html/wp-content/plugins/handball
       - /home/alex/git/hc-goldau.ch:/var/www/html
     environment:
